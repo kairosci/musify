@@ -108,10 +108,9 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Validate sync key format (24 words)
-      final words = syncKey.trim().split(' ');
-      if (words.length != 24) {
-        throw Exception('Invalid sync key format. Expected 24 words.');
+      // Validate sync key format using the model's validation
+      if (!SyncChain.isValidSyncKey(syncKey)) {
+        throw Exception('Invalid sync key. Please check the words and try again.');
       }
 
       final name = deviceName ?? defaultDeviceName;

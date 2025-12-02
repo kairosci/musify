@@ -120,7 +120,7 @@ class _SetupSyncView extends StatelessWidget {
                   '• End-to-end encrypted peer-to-peer sync\n'
                   '• No account or email required\n'
                   '• Your data never touches our servers\n'
-                  '• Works across Windows, Linux, Android, iOS, and Web',
+                  '• Works across Windows, Linux, macOS, Android, iOS, and Web',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.7),
                     height: 1.5,

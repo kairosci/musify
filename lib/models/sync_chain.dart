@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:uuid/uuid.dart';
 
 /// Represents a sync chain for peer-to-peer synchronization without accounts
@@ -98,28 +99,43 @@ class SyncChain {
     );
   }
 
-  /// Generate a 24-word sync key (similar to Brave)
+  /// Word list for sync key generation (similar to BIP39 but simplified)
+  static const List<String> _wordList = [
+    'apple', 'banana', 'cherry', 'delta', 'echo', 'foxtrot', 'golf', 'hotel',
+    'india', 'juliet', 'kilo', 'lima', 'mike', 'november', 'oscar', 'papa',
+    'quebec', 'romeo', 'sierra', 'tango', 'uniform', 'victor', 'whiskey', 'xray',
+    'yankee', 'zulu', 'alpha', 'bravo', 'charlie', 'disco', 'elephant', 'falcon',
+    'guitar', 'hammer', 'island', 'jungle', 'kingdom', 'lemon', 'mountain', 'night',
+    'ocean', 'piano', 'queen', 'river', 'sunset', 'thunder', 'umbrella', 'valley',
+    'winter', 'yellow', 'zebra', 'anchor', 'bridge', 'castle', 'dolphin', 'eagle',
+    'forest', 'garden', 'harbor', 'iceberg', 'jacket', 'knight', 'lantern', 'marble',
+  ];
+
+  /// Generate a 24-word sync key (similar to Brave) using secure random
   static String _generateSyncKey() {
-    const words = [
-      'apple', 'banana', 'cherry', 'delta', 'echo', 'foxtrot', 'golf', 'hotel',
-      'india', 'juliet', 'kilo', 'lima', 'mike', 'november', 'oscar', 'papa',
-      'quebec', 'romeo', 'sierra', 'tango', 'uniform', 'victor', 'whiskey', 'xray',
-      'yankee', 'zulu', 'alpha', 'bravo', 'charlie', 'disco', 'elephant', 'falcon',
-      'guitar', 'hammer', 'island', 'jungle', 'kingdom', 'lemon', 'mountain', 'night',
-      'ocean', 'piano', 'queen', 'river', 'sunset', 'thunder', 'umbrella', 'valley',
-      'winter', 'yellow', 'zebra', 'anchor', 'bridge', 'castle', 'dolphin', 'eagle',
-      'forest', 'garden', 'harbor', 'iceberg', 'jacket', 'knight', 'lantern', 'marble',
-    ];
-    
-    final random = DateTime.now().millisecondsSinceEpoch;
+    final random = Random.secure();
     final List<String> selectedWords = [];
     
     for (int i = 0; i < 24; i++) {
-      final index = (random + i * 17 + i * i * 31) % words.length;
-      selectedWords.add(words[index]);
+      final index = random.nextInt(_wordList.length);
+      selectedWords.add(_wordList[index]);
     }
     
     return selectedWords.join(' ');
+  }
+
+  /// Validate a sync key format
+  static bool isValidSyncKey(String syncKey) {
+    final words = syncKey.trim().split(' ');
+    if (words.length != 24) return false;
+    
+    // Verify all words are from the word list
+    for (final word in words) {
+      if (!_wordList.contains(word.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @override

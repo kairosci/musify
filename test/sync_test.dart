@@ -40,6 +40,26 @@ void main() {
       expect(restored.deviceName, equals(chain.deviceName));
       expect(restored.syncKey, equals(chain.syncKey));
     });
+
+    test('isValidSyncKey validates generated keys', () {
+      final chain = SyncChain.create(deviceName: 'Test Device');
+      expect(SyncChain.isValidSyncKey(chain.syncKey), isTrue);
+    });
+
+    test('isValidSyncKey rejects invalid keys', () {
+      expect(SyncChain.isValidSyncKey('invalid key'), isFalse);
+      expect(SyncChain.isValidSyncKey('one two three'), isFalse);
+      expect(SyncChain.isValidSyncKey(''), isFalse);
+      expect(SyncChain.isValidSyncKey('notaword ' * 24), isFalse);
+    });
+
+    test('isValidSyncKey accepts valid word combinations', () {
+      // Using valid words from the word list
+      final validKey = 'apple banana cherry delta echo foxtrot golf hotel '
+          'india juliet kilo lima mike november oscar papa '
+          'quebec romeo sierra tango uniform victor whiskey xray';
+      expect(SyncChain.isValidSyncKey(validKey), isTrue);
+    });
   });
 
   group('SyncDevice Tests', () {
