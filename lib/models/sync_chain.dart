@@ -99,16 +99,49 @@ class SyncChain {
     );
   }
 
-  /// Word list for sync key generation (similar to BIP39 but simplified)
+  /// Word list for sync key generation (256 words for ~192 bits of entropy with 24 words)
+  /// This is a simplified version inspired by BIP39 word lists
   static const List<String> _wordList = [
-    'apple', 'banana', 'cherry', 'delta', 'echo', 'foxtrot', 'golf', 'hotel',
-    'india', 'juliet', 'kilo', 'lima', 'mike', 'november', 'oscar', 'papa',
-    'quebec', 'romeo', 'sierra', 'tango', 'uniform', 'victor', 'whiskey', 'xray',
-    'yankee', 'zulu', 'alpha', 'bravo', 'charlie', 'disco', 'elephant', 'falcon',
-    'guitar', 'hammer', 'island', 'jungle', 'kingdom', 'lemon', 'mountain', 'night',
-    'ocean', 'piano', 'queen', 'river', 'sunset', 'thunder', 'umbrella', 'valley',
-    'winter', 'yellow', 'zebra', 'anchor', 'bridge', 'castle', 'dolphin', 'eagle',
-    'forest', 'garden', 'harbor', 'iceberg', 'jacket', 'knight', 'lantern', 'marble',
+    // A words
+    'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
+    'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
+    'across', 'action', 'actor', 'actual', 'adapt', 'address', 'adjust', 'admit',
+    'adult', 'advance', 'advice', 'aerobic', 'affair', 'afford', 'afraid', 'again',
+    // B words
+    'balance', 'ball', 'bamboo', 'banana', 'banner', 'bar', 'barely', 'bargain',
+    'barrel', 'base', 'basic', 'basket', 'battle', 'beach', 'bean', 'beauty',
+    'because', 'become', 'beef', 'before', 'begin', 'behind', 'believe', 'below',
+    'belt', 'bench', 'benefit', 'best', 'betray', 'better', 'between', 'beyond',
+    // C words
+    'cabin', 'cable', 'cactus', 'cage', 'cake', 'call', 'calm', 'camera',
+    'camp', 'canal', 'cancel', 'candy', 'cannon', 'canoe', 'canvas', 'canyon',
+    'capable', 'capital', 'captain', 'carbon', 'card', 'cargo', 'carpet', 'carry',
+    'cart', 'case', 'cash', 'castle', 'catalog', 'catch', 'category', 'cattle',
+    // D words
+    'damage', 'damp', 'dance', 'danger', 'daring', 'dash', 'daughter', 'dawn',
+    'debate', 'debris', 'decade', 'december', 'decide', 'decline', 'decorate', 'decrease',
+    'deer', 'defense', 'define', 'defy', 'degree', 'delay', 'deliver', 'demand',
+    'denial', 'dentist', 'deny', 'depart', 'depend', 'deposit', 'depth', 'deputy',
+    // E words
+    'eagle', 'early', 'earn', 'earth', 'easily', 'east', 'easy', 'echo',
+    'ecology', 'economy', 'edge', 'edit', 'educate', 'effort', 'eight', 'either',
+    'elbow', 'elder', 'electric', 'elegant', 'element', 'elephant', 'elevator', 'elite',
+    'else', 'embark', 'embody', 'embrace', 'emerge', 'emotion', 'employ', 'empower',
+    // F words
+    'fabric', 'face', 'faculty', 'fade', 'faint', 'faith', 'fall', 'false',
+    'fame', 'family', 'famous', 'fan', 'fancy', 'fantasy', 'farm', 'fashion',
+    'fatal', 'father', 'fatigue', 'fault', 'favorite', 'feature', 'february', 'federal',
+    'fee', 'feed', 'feel', 'female', 'fence', 'festival', 'fetch', 'fever',
+    // G words
+    'gadget', 'gain', 'galaxy', 'gallery', 'game', 'gap', 'garage', 'garbage',
+    'garden', 'garlic', 'garment', 'gas', 'gasp', 'gate', 'gather', 'gauge',
+    'gaze', 'general', 'genius', 'genre', 'gentle', 'genuine', 'gesture', 'ghost',
+    'giant', 'gift', 'giggle', 'ginger', 'giraffe', 'girl', 'give', 'glad',
+    // H words
+    'habit', 'hair', 'half', 'hammer', 'hamster', 'hand', 'happy', 'harbor',
+    'hard', 'harsh', 'harvest', 'hat', 'have', 'hawk', 'hazard', 'head',
+    'health', 'heart', 'heavy', 'hedgehog', 'height', 'hello', 'helmet', 'help',
+    'hen', 'hero', 'hidden', 'high', 'hill', 'hint', 'hip', 'hire',
   ];
 
   /// Generate a 24-word sync key (similar to Brave) using secure random

@@ -54,10 +54,10 @@ void main() {
     });
 
     test('isValidSyncKey accepts valid word combinations', () {
-      // Using valid words from the word list
-      final validKey = 'apple banana cherry delta echo foxtrot golf hotel '
-          'india juliet kilo lima mike november oscar papa '
-          'quebec romeo sierra tango uniform victor whiskey xray';
+      // Using valid words from the new expanded word list
+      final validKey = 'abandon ability able about above absent absorb abstract '
+          'absurd abuse access accident account accuse achieve acid '
+          'across action actor actual adapt address adjust admit';
       expect(SyncChain.isValidSyncKey(validKey), isTrue);
     });
   });
