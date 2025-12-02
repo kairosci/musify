@@ -866,33 +866,29 @@ class _DeviceTile extends StatelessWidget {
     this.onRemove,
   });
 
+  /// Get platform IconData from device's platform string
+  IconData _getPlatformIcon() {
+    switch (device.platform.toLowerCase()) {
+      case 'windows':
+        return Icons.desktop_windows;
+      case 'linux':
+        return Icons.computer;
+      case 'macos':
+        return Icons.laptop_mac;
+      case 'android':
+        return Icons.phone_android;
+      case 'ios':
+        return Icons.phone_iphone;
+      case 'web':
+        return Icons.language;
+      default:
+        return Icons.devices;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    IconData platformIcon;
-    switch (device.platform.toLowerCase()) {
-      case 'windows':
-        platformIcon = Icons.desktop_windows;
-        break;
-      case 'linux':
-        platformIcon = Icons.computer;
-        break;
-      case 'macos':
-        platformIcon = Icons.laptop_mac;
-        break;
-      case 'android':
-        platformIcon = Icons.phone_android;
-        break;
-      case 'ios':
-        platformIcon = Icons.phone_iphone;
-        break;
-      case 'web':
-        platformIcon = Icons.language;
-        break;
-      default:
-        platformIcon = Icons.devices;
-    }
 
     return ListTile(
       leading: Container(
@@ -901,7 +897,7 @@ class _DeviceTile extends StatelessWidget {
           color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(platformIcon),
+        child: Icon(_getPlatformIcon()),
       ),
       title: Row(
         children: [

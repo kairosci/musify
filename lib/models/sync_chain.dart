@@ -157,14 +157,17 @@ class SyncChain {
     return selectedWords.join(' ');
   }
 
+  /// Cached word set for O(1) lookup during validation
+  static final Set<String> _wordSet = Set.from(_wordList);
+
   /// Validate a sync key format
   static bool isValidSyncKey(String syncKey) {
     final words = syncKey.trim().split(' ');
     if (words.length != 24) return false;
     
-    // Verify all words are from the word list
+    // Verify all words are from the word list using Set for O(1) lookup
     for (final word in words) {
-      if (!_wordList.contains(word.toLowerCase())) {
+      if (!_wordSet.contains(word.toLowerCase())) {
         return false;
       }
     }
