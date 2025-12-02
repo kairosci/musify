@@ -15,8 +15,9 @@ import '../widgets/section_header.dart';
 import 'playlist_screen.dart';
 import 'album_screen.dart';
 import 'artist_screen.dart';
+import 'settings_screen.dart';
 
-/// Home screen with personalized content
+/// Home screen with personalized content (Spotify-like)
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -25,10 +26,12 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // App Bar
+          // App Bar (Spotify-like)
           SliverAppBar(
             floating: true,
             pinned: false,
+            elevation: 0,
+            backgroundColor: AppTheme.backgroundDark.withOpacity(0.95),
             title: Row(
               children: [
                 Container(
@@ -44,21 +47,36 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text('Flyer'),
+                Text(
+                  'Flyer',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined),
                 onPressed: () {},
+                tooltip: 'Notifications',
               ),
               IconButton(
-                icon: const Icon(Icons.history),
+                icon: const Icon(Icons.history_rounded),
                 onPressed: () {},
+                tooltip: 'Recent',
               ),
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                tooltip: 'Settings',
               ),
             ],
           ),
@@ -66,10 +84,12 @@ class HomeScreen extends StatelessWidget {
           // Greeting Section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Text(
                 _getGreeting(),
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -157,7 +177,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Quick access grid showing recent items
+/// Quick access grid showing recent items (Spotify-like)
 class _QuickAccessGrid extends StatelessWidget {
   final List<Playlist> playlists;
 
@@ -172,7 +192,7 @@ class _QuickAccessGrid extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 3.5,
+          childAspectRatio: 3.2,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
         ),
@@ -211,16 +231,18 @@ class _QuickAccessItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).cardTheme.color,
-      borderRadius: BorderRadius.circular(4),
+      color: AppTheme.backgroundDarkTertiary.withOpacity(0.6),
+      borderRadius: BorderRadius.circular(6),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(6),
+        splashColor: AppTheme.primaryRed.withOpacity(0.1),
+        highlightColor: AppTheme.primaryRed.withOpacity(0.05),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(4),
+                left: Radius.circular(6),
               ),
               child: Container(
                 width: 56,
@@ -241,18 +263,20 @@ class _QuickAccessItem extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: AppTheme.textPrimaryDark,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
                     ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 8),
           ],
         ),
       ),
@@ -269,7 +293,7 @@ class _QuickPicksSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 230,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -277,7 +301,7 @@ class _QuickPicksSection extends StatelessWidget {
         itemBuilder: (context, index) {
           final song = songs[index];
           return Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: 16),
             child: _QuickPickCard(
               song: song,
               onTap: () {
@@ -309,46 +333,88 @@ class _QuickPickCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 150,
+        width: 155,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundDarkTertiary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: song.imageUrl != null
-                    ? Image.network(
-                        song.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.music_note,
-                          color: AppTheme.textSecondaryDark,
-                          size: 48,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.music_note,
-                        color: AppTheme.textSecondaryDark,
-                        size: 48,
+            // Album art with play button overlay on hover/tap
+            Stack(
+              children: [
+                Container(
+                  width: 155,
+                  height: 155,
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundDarkTertiary,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-              ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: song.imageUrl != null
+                        ? Image.network(
+                            song.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.music_note,
+                              color: AppTheme.textSecondaryDark,
+                              size: 48,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.music_note,
+                            color: AppTheme.textSecondaryDark,
+                            size: 48,
+                          ),
+                  ),
+                ),
+                // Play button overlay (Spotify-like)
+                Positioned(
+                  right: 8,
+                  bottom: 8,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryRed,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               song.title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 2),
             Text(
               song.artist,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppTheme.textSecondaryDark,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -476,7 +542,7 @@ class _RecentlyPlayedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 230,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -484,7 +550,7 @@ class _RecentlyPlayedSection extends StatelessWidget {
         itemBuilder: (context, index) {
           final song = songs[index];
           return Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: 16),
             child: _QuickPickCard(
               song: song,
               onTap: () {
