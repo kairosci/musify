@@ -41,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.flyer"
+        applicationId "org.kairosci.flyer"
         minSdk flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
