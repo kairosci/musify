@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../models/artist.dart';
-import '../models/song.dart';
 import '../providers/library_provider.dart';
 import '../providers/player_provider.dart';
 import '../utils/sample_data.dart';
@@ -199,7 +198,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                 id: 'liked',
                 title: 'Liked Songs',
                 ownerName: 'You',
-                songs: item.item as List<Song>,
+                songs: item.item as List,
                 createdAt: DateTime.now(),
               ),
               isLikedSongs: true,
