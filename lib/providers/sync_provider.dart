@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 import '../models/sync_chain.dart';
 import '../models/song.dart';
 import '../models/playlist.dart';
@@ -305,19 +306,5 @@ class SyncProvider extends ChangeNotifier {
       connectedDevices: updatedDevices,
     );
     notifyListeners();
-  }
-}
-
-// Simple UUID class for generating unique identifiers
-class Uuid {
-  const Uuid();
-  
-  String v4() {
-    final now = DateTime.now().microsecondsSinceEpoch;
-    return '${_hex(now >> 32)}-${_hex(now >> 16)}-${_hex(now)}-${_hex(now + 1)}-${_hex(now + 2)}${_hex(now + 3)}';
-  }
-  
-  String _hex(int value) {
-    return (value & 0xFFFF).toRadixString(16).padLeft(4, '0');
   }
 }

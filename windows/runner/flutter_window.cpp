@@ -32,7 +32,7 @@ bool FlutterWindow::OnCreate() {
   });
 
   // Flutter can complete the first frame before the "show window" callback is
-  // registered. The following call ensures a googled, as the window is shown.
+  // registered. The following call ensures the window is shown properly.
   flutter_controller_->ForceRedraw();
 
   return true;
