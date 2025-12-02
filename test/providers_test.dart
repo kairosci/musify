@@ -18,9 +18,10 @@ void main() {
       expect(playerProvider.playbackState, PlaybackState.stopped);
       expect(playerProvider.currentSong, null);
       expect(playerProvider.isPlaying, false);
+      expect(playerProvider.currentAudioUrl, null);
     });
 
-    test('playSong should update state', () {
+    test('playSong should update state to buffering initially', () async {
       final song = Song(
         id: 's1',
         title: 'Test Song',
@@ -28,21 +29,24 @@ void main() {
         duration: const Duration(minutes: 3),
       );
 
+      // playSong is now async - it starts buffering immediately
       playerProvider.playSong(song);
 
       expect(playerProvider.currentSong, song);
-      expect(playerProvider.isPlaying, true);
-      expect(playerProvider.playbackState, PlaybackState.playing);
+      // State will be buffering while loading audio
+      expect(playerProvider.playbackState, PlaybackState.buffering);
     });
 
-    test('togglePlayPause should toggle state', () {
+    test('togglePlayPause should toggle state when playing', () {
       final song = Song(
         id: 's1',
         title: 'Test',
         artist: 'Artist',
       );
 
+      // Manually set to playing state for testing
       playerProvider.playSong(song);
+      playerProvider.updatePlaybackState(PlaybackState.playing);
       expect(playerProvider.isPlaying, true);
 
       playerProvider.togglePlayPause();
@@ -82,6 +86,18 @@ void main() {
       
       playerProvider.toggleRepeat();
       expect(playerProvider.repeatMode, RepeatMode.off);
+    });
+
+    test('clearQueue should reset all state', () {
+      final song = Song(id: 's1', title: 'Test', artist: 'Artist');
+      playerProvider.playSong(song);
+      
+      playerProvider.clearQueue();
+      
+      expect(playerProvider.queue, isEmpty);
+      expect(playerProvider.currentSong, null);
+      expect(playerProvider.currentAudioUrl, null);
+      expect(playerProvider.playbackState, PlaybackState.stopped);
     });
   });
 

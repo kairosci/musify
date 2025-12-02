@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/song.dart';
+import '../services/piped_service.dart';
 
 /// Enum representing the current playback state
 enum PlaybackState {
@@ -16,13 +17,16 @@ enum RepeatMode {
   one,
 }
 
-/// Provider for managing audio playback state
+/// Provider for managing audio playback state (audio-only via Piped)
 class PlayerProvider extends ChangeNotifier {
   // Current playback state
   PlaybackState _playbackState = PlaybackState.stopped;
   
   // Current song being played
   Song? _currentSong;
+  
+  // Current audio URL (from Piped)
+  String? _currentAudioUrl;
   
   // Queue of songs
   List<Song> _queue = [];
@@ -43,10 +47,15 @@ class PlayerProvider extends ChangeNotifier {
   
   // Original queue order (for shuffle)
   List<Song> _originalQueue = [];
+  
+  // Error handling
+  String? _errorMessage;
+  bool _isLoadingAudio = false;
 
   // Getters
   PlaybackState get playbackState => _playbackState;
   Song? get currentSong => _currentSong;
+  String? get currentAudioUrl => _currentAudioUrl;
   List<Song> get queue => _queue;
   int get currentIndex => _currentIndex;
   Duration get position => _position;
@@ -54,6 +63,8 @@ class PlayerProvider extends ChangeNotifier {
   double get volume => _volume;
   bool get shuffle => _shuffle;
   RepeatMode get repeatMode => _repeatMode;
+  String? get errorMessage => _errorMessage;
+  bool get isLoadingAudio => _isLoadingAudio;
   
   bool get isPlaying => _playbackState == PlaybackState.playing;
   bool get isPaused => _playbackState == PlaybackState.paused;
@@ -68,8 +79,8 @@ class PlayerProvider extends ChangeNotifier {
     return _position.inMilliseconds / _duration.inMilliseconds;
   }
 
-  /// Play a song
-  void playSong(Song song, {List<Song>? playlist, int startIndex = 0}) {
+  /// Play a song (loads audio stream from Piped)
+  Future<void> playSong(Song song, {List<Song>? playlist, int startIndex = 0}) async {
     if (playlist != null && playlist.isNotEmpty) {
       _queue = List.from(playlist);
       _originalQueue = List.from(playlist);
@@ -82,10 +93,41 @@ class PlayerProvider extends ChangeNotifier {
       _currentSong = song;
     }
     
-    _playbackState = PlaybackState.playing;
+    _playbackState = PlaybackState.buffering;
     _position = Duration.zero;
     _duration = song.duration;
+    _errorMessage = null;
+    _isLoadingAudio = true;
     notifyListeners();
+    
+    // Load audio stream from Piped (audio-only)
+    await _loadAudioStream(song.id);
+  }
+
+  /// Load audio stream URL from Piped
+  Future<void> _loadAudioStream(String videoId) async {
+    try {
+      final streamInfo = await PipedService.getAudioStream(videoId);
+      final audioUrl = streamInfo.bestAudioUrl;
+      
+      if (audioUrl != null) {
+        _currentAudioUrl = audioUrl;
+        _duration = streamInfo.duration;
+        _playbackState = PlaybackState.playing;
+        _isLoadingAudio = false;
+        _errorMessage = null;
+      } else {
+        _errorMessage = 'No audio stream available';
+        _playbackState = PlaybackState.stopped;
+        _isLoadingAudio = false;
+      }
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to load audio: $e';
+      _playbackState = PlaybackState.stopped;
+      _isLoadingAudio = false;
+      notifyListeners();
+    }
   }
 
   /// Toggle play/pause
@@ -118,11 +160,12 @@ class PlayerProvider extends ChangeNotifier {
   void stop() {
     _playbackState = PlaybackState.stopped;
     _position = Duration.zero;
+    _currentAudioUrl = null;
     notifyListeners();
   }
 
   /// Skip to next song
-  void skipNext() {
+  Future<void> skipNext() async {
     if (_queue.isEmpty) return;
     
     if (_currentIndex < _queue.length - 1) {
@@ -136,31 +179,42 @@ class PlayerProvider extends ChangeNotifier {
     _currentSong = _queue[_currentIndex];
     _position = Duration.zero;
     _duration = _currentSong?.duration ?? Duration.zero;
-    _playbackState = PlaybackState.playing;
+    _playbackState = PlaybackState.buffering;
     notifyListeners();
+    
+    // Load new audio stream
+    await _loadAudioStream(_currentSong!.id);
   }
 
   /// Skip to previous song
-  void skipPrevious() {
+  Future<void> skipPrevious() async {
     if (_queue.isEmpty) return;
     
     // If more than 3 seconds have passed, restart current song
     if (_position.inSeconds > 3) {
       _position = Duration.zero;
+      notifyListeners();
     } else if (_currentIndex > 0) {
       _currentIndex--;
       _currentSong = _queue[_currentIndex];
       _position = Duration.zero;
       _duration = _currentSong?.duration ?? Duration.zero;
+      _playbackState = PlaybackState.buffering;
+      notifyListeners();
+      
+      // Load new audio stream
+      await _loadAudioStream(_currentSong!.id);
     } else if (_repeatMode == RepeatMode.all) {
       _currentIndex = _queue.length - 1;
       _currentSong = _queue[_currentIndex];
       _position = Duration.zero;
       _duration = _currentSong?.duration ?? Duration.zero;
+      _playbackState = PlaybackState.buffering;
+      notifyListeners();
+      
+      // Load new audio stream
+      await _loadAudioStream(_currentSong!.id);
     }
-    
-    _playbackState = PlaybackState.playing;
-    notifyListeners();
   }
 
   /// Seek to position
@@ -259,22 +313,27 @@ class PlayerProvider extends ChangeNotifier {
     _originalQueue.clear();
     _currentIndex = 0;
     _currentSong = null;
+    _currentAudioUrl = null;
     _playbackState = PlaybackState.stopped;
     _position = Duration.zero;
     _duration = Duration.zero;
+    _errorMessage = null;
     notifyListeners();
   }
 
   /// Play song at specific index in queue
-  void playAtIndex(int index) {
+  Future<void> playAtIndex(int index) async {
     if (index < 0 || index >= _queue.length) return;
     
     _currentIndex = index;
     _currentSong = _queue[index];
     _position = Duration.zero;
     _duration = _currentSong?.duration ?? Duration.zero;
-    _playbackState = PlaybackState.playing;
+    _playbackState = PlaybackState.buffering;
     notifyListeners();
+    
+    // Load audio stream
+    await _loadAudioStream(_currentSong!.id);
   }
 
   /// Update position (called by audio service)
@@ -292,6 +351,12 @@ class PlayerProvider extends ChangeNotifier {
   /// Update playback state
   void updatePlaybackState(PlaybackState state) {
     _playbackState = state;
+    notifyListeners();
+  }
+  
+  /// Clear error message
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }
