@@ -5,11 +5,13 @@ import '../models/album.dart';
 import '../models/artist.dart';
 import '../providers/library_provider.dart';
 import '../providers/player_provider.dart';
+import '../providers/sync_provider.dart';
 import '../utils/sample_data.dart';
 import '../utils/app_theme.dart';
 import 'playlist_screen.dart';
 import 'album_screen.dart';
 import 'artist_screen.dart';
+import 'sync_screen.dart';
 
 /// Library screen showing user's saved content
 class LibraryScreen extends StatefulWidget {
@@ -50,6 +52,29 @@ class _LibraryScreenState extends State<LibraryScreen>
                 IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () {},
+                ),
+                Consumer<SyncProvider>(
+                  builder: (context, syncProvider, child) {
+                    return IconButton(
+                      icon: Badge(
+                        isLabelVisible: syncProvider.isSyncing,
+                        child: Icon(
+                          syncProvider.isEnabled 
+                              ? Icons.sync 
+                              : Icons.sync_disabled,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SyncScreen(),
+                          ),
+                        );
+                      },
+                      tooltip: 'Sync Settings',
+                    );
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),

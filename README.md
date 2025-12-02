@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.0+-blue?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/Dart-3.0+-blue?logo=dart" alt="Dart">
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-green" alt="Platform">
+  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Windows%20%7C%20Linux-green" alt="Platform">
   <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
 </p>
 
@@ -67,6 +67,16 @@ flutter build ios --release
 flutter build web --release
 ```
 
+#### Windows
+```bash
+flutter build windows --release
+```
+
+#### Linux
+```bash
+flutter build linux --release
+```
+
 ## Project Structure
 
 ```
@@ -76,11 +86,13 @@ lib/
 │   ├── song.dart
 │   ├── album.dart
 │   ├── playlist.dart
-│   └── artist.dart
+│   ├── artist.dart
+│   └── sync_chain.dart    # P2P sync data models
 ├── providers/             # State management (Provider)
 │   ├── player_provider.dart
 │   ├── library_provider.dart
-│   └── theme_provider.dart
+│   ├── theme_provider.dart
+│   └── sync_provider.dart # P2P sync state management
 ├── screens/               # App screens
 │   ├── main_screen.dart
 │   ├── home_screen.dart
@@ -89,7 +101,8 @@ lib/
 │   ├── player_screen.dart
 │   ├── playlist_screen.dart
 │   ├── album_screen.dart
-│   └── artist_screen.dart
+│   ├── artist_screen.dart
+│   └── sync_screen.dart   # P2P sync settings screen
 ├── widgets/               # Reusable widgets
 │   ├── mini_player.dart
 │   ├── song_tile.dart
@@ -111,6 +124,7 @@ This app follows the design and UX principles of Metrolist:
 - Library management
 - Background playback support
 - Offline capability (download support structure)
+- **P2P Sync** - Account-free synchronization inspired by Brave browser
 
 ### Spotify-like UX
 - Bottom navigation with Home, Search, Library tabs
@@ -162,6 +176,33 @@ Run tests with:
 ```bash
 flutter test
 ```
+
+## P2P Sync Feature
+
+Flyer includes a peer-to-peer synchronization feature inspired by Brave browser's sync functionality. This allows you to sync your music library across multiple devices without creating an account.
+
+### How It Works
+
+1. **Start a New Sync Chain**: On your first device, create a new sync chain. You'll receive a 24-word sync code.
+2. **Save Your Sync Code**: Store this code securely - it cannot be recovered!
+3. **Connect Other Devices**: Enter the same 24-word code on your other devices to join the sync chain.
+4. **Choose What to Sync**: Select which data to sync (liked songs, playlists, settings, etc.)
+
+### Privacy Features
+
+- **No Account Required**: Your data is never associated with an email or account
+- **End-to-End Encrypted**: Only devices with the sync code can read your data
+- **Decentralized**: Data syncs directly between devices via P2P
+- **Full Control**: Remove devices or leave the sync chain at any time
+
+### Supported Platforms for Sync
+
+- Windows
+- Linux  
+- macOS
+- Android
+- iOS
+- Web
 
 ## License
 
