@@ -18,10 +18,9 @@ void main() {
       expect(playerProvider.playbackState, PlaybackState.stopped);
       expect(playerProvider.currentSong, null);
       expect(playerProvider.isPlaying, false);
-      expect(playerProvider.currentAudioUrl, null);
     });
 
-    test('playSong should update state to buffering initially', () async {
+    test('playSong should update state', () {
       final song = Song(
         id: 's1',
         title: 'Test Song',
@@ -29,24 +28,21 @@ void main() {
         duration: const Duration(minutes: 3),
       );
 
-      // playSong is now async - it starts buffering immediately
-      await playerProvider.playSong(song);
+      playerProvider.playSong(song);
 
       expect(playerProvider.currentSong, song);
-      // State will be stopped after network error in test (no real Piped server)
-      // In real usage, it would transition to playing after loading
+      expect(playerProvider.isPlaying, true);
+      expect(playerProvider.playbackState, PlaybackState.playing);
     });
 
-    test('togglePlayPause should toggle state when playing', () async {
+    test('togglePlayPause should toggle state', () {
       final song = Song(
         id: 's1',
         title: 'Test',
         artist: 'Artist',
       );
 
-      // Manually set to playing state for testing (bypass async network call)
-      await playerProvider.playSong(song);
-      playerProvider.updatePlaybackState(PlaybackState.playing);
+      playerProvider.playSong(song);
       expect(playerProvider.isPlaying, true);
 
       playerProvider.togglePlayPause();
@@ -56,10 +52,10 @@ void main() {
       expect(playerProvider.isPlaying, true);
     });
 
-    test('addToQueue should add song', () async {
+    test('addToQueue should add song', () {
       final song = Song(id: 's1', title: 'Test', artist: 'Artist');
       
-      await playerProvider.playSong(song);
+      playerProvider.playSong(song);
       final newSong = Song(id: 's2', title: 'New Song', artist: 'Artist');
       
       playerProvider.addToQueue(newSong);
@@ -86,18 +82,6 @@ void main() {
       
       playerProvider.toggleRepeat();
       expect(playerProvider.repeatMode, RepeatMode.off);
-    });
-
-    test('clearQueue should reset all state', () async {
-      final song = Song(id: 's1', title: 'Test', artist: 'Artist');
-      await playerProvider.playSong(song);
-      
-      playerProvider.clearQueue();
-      
-      expect(playerProvider.queue, isEmpty);
-      expect(playerProvider.currentSong, null);
-      expect(playerProvider.currentAudioUrl, null);
-      expect(playerProvider.playbackState, PlaybackState.stopped);
     });
   });
 

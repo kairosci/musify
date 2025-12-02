@@ -355,7 +355,7 @@ class _ProgressBar extends StatelessWidget {
   }
 }
 
-/// Main player controls (Spotify-like)
+/// Main player controls
 class _PlayerControls extends StatelessWidget {
   final PlayerProvider playerProvider;
 
@@ -369,76 +369,45 @@ class _PlayerControls extends StatelessWidget {
         // Shuffle
         IconButton(
           icon: Icon(
-            Icons.shuffle_rounded,
+            Icons.shuffle,
             color: playerProvider.shuffle
                 ? AppTheme.primaryRed
-                : AppTheme.textSecondaryDark,
-            size: 24,
+                : AppTheme.textPrimaryDark,
           ),
           onPressed: () => playerProvider.toggleShuffle(),
         ),
         
         // Previous
         IconButton(
-          icon: Icon(
-            Icons.skip_previous_rounded, 
-            size: 44,
-            color: playerProvider.hasPrevious 
-                ? AppTheme.textPrimaryDark 
-                : AppTheme.textTertiaryDark,
-          ),
+          icon: const Icon(Icons.skip_previous, size: 40),
           onPressed: playerProvider.hasPrevious
               ? () => playerProvider.skipPrevious()
               : null,
         ),
         
-        // Play/Pause (Spotify-like large circular button)
+        // Play/Pause
         Container(
-          width: 68,
-          height: 68,
-          decoration: BoxDecoration(
+          width: 64,
+          height: 64,
+          decoration: const BoxDecoration(
             color: AppTheme.textPrimaryDark,
             shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
-          child: playerProvider.isBuffering
-              ? const Center(
-                  child: SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: AppTheme.backgroundDark,
-                    ),
-                  ),
-                )
-              : IconButton(
-                  icon: Icon(
-                    playerProvider.isPlaying
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
-                    color: AppTheme.backgroundDark,
-                    size: 36,
-                  ),
-                  onPressed: () => playerProvider.togglePlayPause(),
-                ),
+          child: IconButton(
+            icon: Icon(
+              playerProvider.isPlaying
+                  ? Icons.pause
+                  : Icons.play_arrow,
+              color: AppTheme.backgroundDark,
+              size: 32,
+            ),
+            onPressed: () => playerProvider.togglePlayPause(),
+          ),
         ),
         
         // Next
         IconButton(
-          icon: Icon(
-            Icons.skip_next_rounded, 
-            size: 44,
-            color: playerProvider.hasNext 
-                ? AppTheme.textPrimaryDark 
-                : AppTheme.textTertiaryDark,
-          ),
+          icon: const Icon(Icons.skip_next, size: 40),
           onPressed: playerProvider.hasNext
               ? () => playerProvider.skipNext()
               : null,
@@ -448,12 +417,11 @@ class _PlayerControls extends StatelessWidget {
         IconButton(
           icon: Icon(
             playerProvider.repeatMode == RepeatMode.one
-                ? Icons.repeat_one_rounded
-                : Icons.repeat_rounded,
+                ? Icons.repeat_one
+                : Icons.repeat,
             color: playerProvider.repeatMode != RepeatMode.off
                 ? AppTheme.primaryRed
-                : AppTheme.textSecondaryDark,
-            size: 24,
+                : AppTheme.textPrimaryDark,
           ),
           onPressed: () => playerProvider.toggleRepeat(),
         ),

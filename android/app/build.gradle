@@ -24,18 +24,16 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.flyer"
-    compileSdk 35
+    compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
-    // Java 21 is the MINIMUM required version
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    // Kotlin JVM target must match minimum Java version (21)
     kotlinOptions {
-        jvmTarget = '21'
+        jvmTarget = '1.8'
     }
 
     sourceSets {
@@ -43,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "org.kairosci.flyer"
+        applicationId "com.example.flyer"
         minSdk flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
