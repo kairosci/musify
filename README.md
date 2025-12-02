@@ -1,4 +1,4 @@
-# Flyer 🎵
+# Flyer
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.0+-blue?logo=flutter" alt="Flutter">
@@ -9,24 +9,22 @@
 
 A Spotify-like music streaming app built with Flutter, inspired by the principles of [Metrolist](https://github.com/mostafaalagamy/Metrolist). Features a modern Material 3 design with a red accent color and Spotify-like UX.
 
-## ✨ Features
+## Features
 
-- 🎨 **Material 3 Design** - Modern UI with red accent color
-- 🌙 **Dark/Light Theme** - Spotify-inspired dark theme as default
-- 🏠 **Home Screen** - Personalized recommendations, quick picks, and recent plays
-- 🔍 **Search** - Search for songs, albums, artists, and playlists
-- 📚 **Library** - Manage your liked songs, playlists, albums, and followed artists
-- 🎵 **Now Playing** - Full-screen player with album art and controls
-- 📱 **Mini Player** - Compact player at bottom for quick controls
-- 📋 **Playlists** - Create, edit, and manage playlists
-- 💿 **Albums & Artists** - Browse albums and artist pages
-- ❤️ **Liked Songs** - Save your favorite tracks
-- 🔀 **Shuffle & Repeat** - Multiple playback modes
-- 📥 **Queue Management** - Add songs to queue, play next
-- 🔄 **P2P Sync** - Sync your library across devices without an account (Brave-style)
-- 💻 **Cross-Platform** - Works on Android, iOS, Web, Windows, and Linux
+- **Material 3 Design** - Modern UI with red accent color
+- **Dark/Light Theme** - Spotify-inspired dark theme as default
+- **Home Screen** - Personalized recommendations, quick picks, and recent plays
+- **Search** - Search for songs, albums, artists, and playlists
+- **Library** - Manage your liked songs, playlists, albums, and followed artists
+- **Now Playing** - Full-screen player with album art and controls
+- **Mini Player** - Compact player at bottom for quick controls
+- **Playlists** - Create, edit, and manage playlists
+- **Albums & Artists** - Browse albums and artist pages
+- **Liked Songs** - Save your favorite tracks
+- **Shuffle & Repeat** - Multiple playback modes
+- **Queue Management** - Add songs to queue, play next
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -79,7 +77,7 @@ flutter build windows --release
 flutter build linux --release
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 lib/
@@ -117,7 +115,7 @@ lib/
     └── sample_data.dart
 ```
 
-## 🎨 Design Principles
+## Design Principles
 
 ### Inspired by Metrolist
 This app follows the design and UX principles of Metrolist:
@@ -142,7 +140,7 @@ This app follows the design and UX principles of Metrolist:
 - **Surface**: Dark gray (#1E1E1E)
 - **Cards**: Slightly lighter gray (#282828)
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework**: Flutter 3.x
 - **State Management**: Provider
@@ -151,7 +149,7 @@ This app follows the design and UX principles of Metrolist:
 - **Networking**: http
 - **Image Caching**: cached_network_image
 
-## 📱 Screenshots
+## Screenshots
 
 The app features:
 - A modern home screen with personalized recommendations
@@ -160,7 +158,7 @@ The app features:
 - Full-featured music player
 - Detailed screens for playlists, albums, and artists
 
-## 🔧 Configuration
+## Configuration
 
 ### Theme Customization
 The app theme can be customized in `lib/utils/app_theme.dart`. You can modify:
@@ -172,14 +170,14 @@ The app theme can be customized in `lib/utils/app_theme.dart`. You can modify:
 ### Sample Data
 Sample data for development is located in `lib/utils/sample_data.dart`. Replace this with your actual data source in production.
 
-## 🧪 Testing
+## Testing
 
 Run tests with:
 ```bash
 flutter test
 ```
 
-## 🔄 P2P Sync Feature
+## P2P Sync Feature
 
 Flyer includes a peer-to-peer synchronization feature inspired by Brave browser's sync functionality. This allows you to sync your music library across multiple devices without creating an account.
 
@@ -199,18 +197,18 @@ Flyer includes a peer-to-peer synchronization feature inspired by Brave browser'
 
 ### Supported Platforms for Sync
 
-- ✅ Windows
-- ✅ Linux  
-- ✅ macOS
-- ✅ Android
-- ✅ iOS
-- ✅ Web
+- Windows
+- Linux  
+- macOS
+- Android
+- iOS
+- Web
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Metrolist](https://github.com/mostafaalagamy/Metrolist) - Design inspiration
 - [Spotify](https://www.spotify.com) - UX reference
@@ -218,4 +216,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ using Flutter
+Made with Flutter
