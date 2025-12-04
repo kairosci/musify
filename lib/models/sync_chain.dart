@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:uuid/uuid.dart';
 
-/// Represents a sync chain for peer-to-peer synchronization without accounts
-/// Similar to Brave's sync feature
+/**
+ * Represents a sync chain for peer-to-peer synchronization.
+ * 
+ * Similar to Brave's sync feature, this enables syncing data
+ * across devices without requiring user accounts. Uses a 24-word
+ * phrase for secure key exchange and device pairing.
+ */
 class SyncChain {
   final String id;
   final String deviceId;
@@ -99,8 +104,11 @@ class SyncChain {
     );
   }
 
-  /// Word list for sync key generation (256 words for ~192 bits of entropy with 24 words)
-  /// This is a simplified version inspired by BIP39 word lists
+  /**
+   * Word list for sync key generation.
+   * Contains 256 words providing ~192 bits of entropy with 24 words.
+   * Inspired by BIP39 mnemonic word lists used in cryptocurrency wallets.
+   */
   static const List<String> _wordList = [
     // A words
     'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
@@ -144,7 +152,10 @@ class SyncChain {
     'hen', 'hero', 'hidden', 'high', 'hill', 'hint', 'hip', 'hire',
   ];
 
-  /// Generate a 24-word sync key (similar to Brave) using secure random
+  /**
+   * Generates a cryptographically secure 24-word sync key.
+   * Uses Random.secure() for high-entropy random word selection.
+   */
   static String _generateSyncKey() {
     final random = Random.secure();
     final List<String> selectedWords = [];
@@ -157,10 +168,15 @@ class SyncChain {
     return selectedWords.join(' ');
   }
 
-  /// Cached word set for O(1) lookup during validation
+  /**
+   * Cached word set for O(1) lookup during validation.
+   */
   static final Set<String> _wordSet = Set.from(_wordList);
 
-  /// Validate a sync key format
+  /**
+   * Validates that a sync key has the correct format.
+   * Must contain exactly 24 words, all from the word list.
+   */
   static bool isValidSyncKey(String syncKey) {
     final words = syncKey.trim().split(' ');
     if (words.length != 24) return false;
@@ -183,7 +199,10 @@ class SyncChain {
   int get hashCode => id.hashCode;
 }
 
-/// Represents a device connected to the sync chain
+/**
+ * Represents a device connected to the sync chain.
+ * Tracks device identity, platform, and last seen timestamp.
+ */
 class SyncDevice {
   final String id;
   final String name;
@@ -249,7 +268,9 @@ class SyncDevice {
   factory SyncDevice.fromJson(String source) =>
       SyncDevice.fromMap(json.decode(source));
 
-  /// Get platform icon name
+  /**
+   * Returns the appropriate Material Design icon name for this device's platform.
+   */
   String get platformIcon {
     switch (platform.toLowerCase()) {
       case 'windows':
@@ -278,7 +299,10 @@ class SyncDevice {
   int get hashCode => id.hashCode;
 }
 
-/// Represents data that can be synced between devices
+/**
+ * Represents data that can be synced between devices.
+ * Contains the data type, payload, timestamp, and source device.
+ */
 class SyncData {
   final String type; // 'liked_songs', 'playlists', 'settings', etc.
   final Map<String, dynamic> data;
@@ -318,7 +342,9 @@ class SyncData {
       SyncData.fromMap(json.decode(source));
 }
 
-/// Sync status enum
+/**
+ * Represents the current status of the sync system.
+ */
 enum SyncStatus {
   idle,
   syncing,
@@ -327,7 +353,9 @@ enum SyncStatus {
   disabled,
 }
 
-/// Extension for SyncStatus
+/**
+ * Extension methods for SyncStatus enum.
+ */
 extension SyncStatusExtension on SyncStatus {
   String get displayName {
     switch (this) {

@@ -1,6 +1,11 @@
 import 'song.dart';
 
-/// Represents a playlist
+/**
+ * Represents a playlist containing a collection of songs.
+ * 
+ * Supports both user-created and system-generated playlists
+ * with options for public/private visibility and collaboration.
+ */
 class Playlist {
   final String id;
   final String title;
