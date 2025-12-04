@@ -1,5 +1,5 @@
 name: flyer
-description: A Spotify-like music streaming app built with Flutter, inspired by Metrolist principles.
+description: A modern music streaming app built with Flutter. Audio-only YouTube Music client using Piped API with P2P sync across devices.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -52,12 +52,3 @@ flutter:
   assets:
     - assets/images/
     - assets/fonts/
-  
-  fonts:
-    - family: Circular
-      fonts:
-        - asset: assets/fonts/CircularStd-Book.otf
-        - asset: assets/fonts/CircularStd-Medium.otf
-          weight: 500
-        - asset: assets/fonts/CircularStd-Bold.otf
-          weight: 700

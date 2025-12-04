@@ -7,14 +7,15 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
 </p>
 
-A Spotify-like music streaming app built with Flutter, inspired by the principles of [Metrolist](https://github.com/mostafaalagamy/Metrolist). Features a modern Material 3 design with a red accent color and Spotify-like UX.
+A modern music streaming app built with Flutter - an **audio-only** YouTube Music client using the Piped API. Features Material 3 design with a red accent color and P2P synchronization across devices.
 
 ## Features
 
+- **Audio-Only Streaming** - Stream music only, no video content
 - **Material 3 Design** - Modern UI with red accent color
-- **Dark/Light Theme** - Spotify-inspired dark theme as default
+- **Dark/Light Theme** - Clean dark theme as default
 - **Home Screen** - Personalized recommendations, quick picks, and recent plays
-- **Search** - Search for songs, albums, artists, and playlists
+- **Search** - Search for songs, albums, artists, and playlists via Piped API
 - **Library** - Manage your liked songs, playlists, albums, and followed artists
 - **Now Playing** - Full-screen player with album art and controls
 - **Mini Player** - Compact player at bottom for quick controls
@@ -23,6 +24,16 @@ A Spotify-like music streaming app built with Flutter, inspired by the principle
 - **Liked Songs** - Save your favorite tracks
 - **Shuffle & Repeat** - Multiple playback modes
 - **Queue Management** - Add songs to queue, play next
+- **P2P Sync** - Account-free synchronization inspired by Brave browser
+
+## Data Source
+
+Flyer uses **Piped** as its backend - an open-source alternative frontend for YouTube. This ensures:
+- Privacy-focused streaming
+- No ads
+- No tracking
+- Access to YouTube Music content
+- Audio-only playback (bandwidth efficient)
 
 ## Getting Started
 
@@ -93,6 +104,8 @@ lib/
 │   ├── library_provider.dart
 │   ├── theme_provider.dart
 │   └── sync_provider.dart # P2P sync state management
+├── services/              # External API services
+│   └── piped_service.dart # Piped API for YouTube Music
 ├── screens/               # App screens
 │   ├── main_screen.dart
 │   ├── home_screen.dart
@@ -102,6 +115,7 @@ lib/
 │   ├── playlist_screen.dart
 │   ├── album_screen.dart
 │   ├── artist_screen.dart
+│   ├── settings_screen.dart
 │   └── sync_screen.dart   # P2P sync settings screen
 ├── widgets/               # Reusable widgets
 │   ├── mini_player.dart
@@ -126,7 +140,7 @@ This app follows the design and UX principles of Metrolist:
 - Offline capability (download support structure)
 - **P2P Sync** - Account-free synchronization inspired by Brave browser
 
-### Spotify-like UX
+### Modern Music App UX
 - Bottom navigation with Home, Search, Library tabs
 - Mini player that appears when playing music
 - Full-screen player with gesture controls
@@ -211,7 +225,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - [Metrolist](https://github.com/mostafaalagamy/Metrolist) - Design inspiration
-- [Spotify](https://www.spotify.com) - UX reference
+- [Piped](https://github.com/TeamPiped/Piped) - YouTube Music API alternative
 - [Flutter](https://flutter.dev) - Framework
 
 ---

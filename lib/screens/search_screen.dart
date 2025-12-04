@@ -5,6 +5,7 @@ import '../models/album.dart';
 import '../models/artist.dart';
 import '../models/playlist.dart';
 import '../providers/player_provider.dart';
+import '../services/piped_service.dart';
 import '../utils/sample_data.dart';
 import '../utils/app_theme.dart';
 import '../widgets/song_tile.dart';
@@ -21,10 +22,14 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  static const int _maxSearchResults = 10;
+  
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isSearching = false;
+  bool _isLoading = false;
   String _searchQuery = '';
+  String? _errorMessage;
 
   // Search results
   List<Song> _songResults = [];
@@ -39,41 +44,102 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void _onSearchChanged(String query) {
+  Future<void> _onSearchChanged(String query) async {
     setState(() {
       _searchQuery = query;
       _isSearching = query.isNotEmpty;
+      _errorMessage = null;
+    });
 
-      if (_isSearching) {
-        // Filter sample data based on query
-        final lowerQuery = query.toLowerCase();
+    if (_isSearching && query.length >= 2) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        // Search using Piped API for music (audio-only)
+        final results = await PipedService.searchMusic(query);
         
-        _songResults = SampleData.songs
+        // Convert Piped results to Song models
+        // Note: Server already filters for music_songs, but we keep isMusic check
+        // as a safety measure for any unexpected items
+        final songs = results.items
+            .map((item) => item.toSong())
+            .toList();
+
+        // Also search local sample data as fallback
+        final lowerQuery = query.toLowerCase();
+        final localSongs = SampleData.songs
             .where((s) =>
                 s.title.toLowerCase().contains(lowerQuery) ||
                 s.artist.toLowerCase().contains(lowerQuery))
             .toList();
 
-        _albumResults = SampleData.albums
+        final localAlbums = SampleData.albums
             .where((a) =>
                 a.title.toLowerCase().contains(lowerQuery) ||
                 a.artist.toLowerCase().contains(lowerQuery))
             .toList();
 
-        _artistResults = SampleData.artists
+        final localArtists = SampleData.artists
             .where((a) => a.name.toLowerCase().contains(lowerQuery))
             .toList();
 
-        _playlistResults = SampleData.playlists
+        final localPlaylists = SampleData.playlists
             .where((p) => p.title.toLowerCase().contains(lowerQuery))
             .toList();
-      } else {
+
+        if (mounted) {
+          setState(() {
+            // Combine Piped results with local results
+            _songResults = [...songs, ...localSongs];
+            _albumResults = localAlbums;
+            _artistResults = localArtists;
+            _playlistResults = localPlaylists;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        // Fall back to local sample data on error
+        final lowerQuery = query.toLowerCase();
+        
+        if (mounted) {
+          setState(() {
+            _songResults = SampleData.songs
+                .where((s) =>
+                    s.title.toLowerCase().contains(lowerQuery) ||
+                    s.artist.toLowerCase().contains(lowerQuery))
+                .toList();
+
+            _albumResults = SampleData.albums
+                .where((a) =>
+                    a.title.toLowerCase().contains(lowerQuery) ||
+                    a.artist.toLowerCase().contains(lowerQuery))
+                .toList();
+
+            _artistResults = SampleData.artists
+                .where((a) => a.name.toLowerCase().contains(lowerQuery))
+                .toList();
+
+            _playlistResults = SampleData.playlists
+                .where((p) => p.title.toLowerCase().contains(lowerQuery))
+                .toList();
+                
+            _isLoading = false;
+            // Show error but still show local results
+            _errorMessage = 'Using offline results. Online search unavailable.';
+          });
+        }
+      }
+    } else if (!_isSearching) {
+      setState(() {
         _songResults = [];
         _albumResults = [];
         _artistResults = [];
         _playlistResults = [];
-      }
-    });
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -128,6 +194,19 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   List<Widget> _buildSearchResults() {
+    // Show loading indicator
+    if (_isLoading) {
+      return [
+        const SliverFillRemaining(
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppTheme.primaryRed,
+            ),
+          ),
+        ),
+      ];
+    }
+
     final hasResults = _songResults.isNotEmpty ||
         _albumResults.isNotEmpty ||
         _artistResults.isNotEmpty ||
@@ -150,6 +229,15 @@ class _SearchScreenState extends State<SearchScreen> {
                   'No results found for "$_searchQuery"',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _errorMessage!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondaryDark,
+                        ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -158,6 +246,37 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     return [
+      // Show error message banner if there was an error
+      if (_errorMessage != null)
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundDarkTertiary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline,
+                  size: 18,
+                  color: AppTheme.textSecondaryDark,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _errorMessage!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondaryDark,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
       // Songs
       if (_songResults.isNotEmpty) ...[
         SliverToBoxAdapter(
@@ -184,7 +303,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
               );
             },
-            childCount: _songResults.length.clamp(0, 5),
+            childCount: _songResults.length.clamp(0, _maxSearchResults),
           ),
         ),
       ],
