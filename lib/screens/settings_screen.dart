@@ -51,7 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('About Flyer'),
-            subtitle: const Text('A Spotify-like music streaming app'),
+            subtitle: const Text('A modern music streaming app'),
             onTap: () => _showAboutDialog(context),
           ),
           ListTile(
@@ -227,7 +227,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
-              'A Spotify-like music streaming app built with Flutter.',
+              'A modern music streaming app built with Flutter, using YouTube Music as audio source via Piped API.',
               style: TextStyle(color: AppTheme.textSecondaryDark),
             ),
             SizedBox(height: 16),
@@ -239,6 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('• Audio-only streaming via Piped'),
             Text('• No ads, no tracking'),
             Text('• Privacy-focused'),
+            Text('• P2P sync across devices'),
             Text('• Open source alternative frontend'),
           ],
         ),

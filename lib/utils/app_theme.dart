@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// App theme configuration with Spotify-like UX and red accent color
+/// App theme configuration with modern dark theme UX and red accent color
 class AppTheme {
   // Primary Colors - Red accent as requested
   static const Color primaryRed = Color(0xFFE53935);
   static const Color primaryRedLight = Color(0xFFFF6F60);
   static const Color primaryRedDark = Color(0xFFAB000D);
   
-  // Background Colors - Spotify-like dark theme
+  // Background Colors - Modern dark theme
   static const Color backgroundDark = Color(0xFF121212);
   static const Color backgroundDarkSecondary = Color(0xFF181818);
   static const Color backgroundDarkTertiary = Color(0xFF282828);
@@ -35,7 +35,7 @@ class AppTheme {
     Color(0xFFAB000D),
   ];
 
-  /// Dark theme - Primary theme (Spotify-like)
+  /// Dark theme - Primary theme (Modern dark)
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
