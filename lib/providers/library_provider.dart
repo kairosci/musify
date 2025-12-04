@@ -4,30 +4,21 @@ import '../models/album.dart';
 import '../models/playlist.dart';
 import '../models/artist.dart';
 
-/// Provider for managing user's library
+/**
+ * Provider for managing the user's music library.
+ * 
+ * Handles liked songs, playlists, saved albums, followed artists,
+ * recently played tracks, and downloaded content.
+ */
 class LibraryProvider extends ChangeNotifier {
-  // Liked songs
   final List<Song> _likedSongs = [];
-  
-  // User's playlists
   final List<Playlist> _playlists = [];
-  
-  // Saved albums
   final List<Album> _savedAlbums = [];
-  
-  // Followed artists
   final List<Artist> _followedArtists = [];
-  
-  // Recently played songs
   final List<Song> _recentlyPlayed = [];
-  
-  // Download queue
   final List<Song> _downloadQueue = [];
-  
-  // Downloaded songs
   final List<Song> _downloadedSongs = [];
 
-  // Getters
   List<Song> get likedSongs => List.unmodifiable(_likedSongs);
   List<Playlist> get playlists => List.unmodifiable(_playlists);
   List<Album> get savedAlbums => List.unmodifiable(_savedAlbums);
@@ -36,7 +27,6 @@ class LibraryProvider extends ChangeNotifier {
   List<Song> get downloadQueue => List.unmodifiable(_downloadQueue);
   List<Song> get downloadedSongs => List.unmodifiable(_downloadedSongs);
 
-  // Liked Songs Methods
   bool isLiked(Song song) => _likedSongs.any((s) => s.id == song.id);
 
   void toggleLike(Song song) {
@@ -61,7 +51,6 @@ class LibraryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Playlist Methods
   Playlist? getPlaylist(String id) {
     try {
       return _playlists.firstWhere((p) => p.id == id);
@@ -121,7 +110,6 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  // Album Methods
   bool isAlbumSaved(String albumId) =>
       _savedAlbums.any((a) => a.id == albumId);
 
@@ -145,7 +133,6 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  // Artist Methods
   bool isArtistFollowed(String artistId) =>
       _followedArtists.any((a) => a.id == artistId);
 
@@ -169,11 +156,9 @@ class LibraryProvider extends ChangeNotifier {
     }
   }
 
-  // Recently Played Methods
   void addToRecentlyPlayed(Song song) {
     _recentlyPlayed.removeWhere((s) => s.id == song.id);
     _recentlyPlayed.insert(0, song);
-    // Keep only last 50 songs
     if (_recentlyPlayed.length > 50) {
       _recentlyPlayed.removeLast();
     }
@@ -185,7 +170,6 @@ class LibraryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Download Methods
   bool isDownloaded(String songId) =>
       _downloadedSongs.any((s) => s.id == songId);
 
@@ -196,7 +180,6 @@ class LibraryProvider extends ChangeNotifier {
     if (!isDownloaded(song.id) && !isDownloading(song.id)) {
       _downloadQueue.add(song);
       notifyListeners();
-      // Simulate download completion
       _simulateDownload(song);
     }
   }

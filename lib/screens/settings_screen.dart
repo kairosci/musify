@@ -3,7 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/piped_service.dart';
 import '../utils/app_theme.dart';
 
-/// Settings screen for configuring the app
+/**
+ * Settings screen for configuring the app preferences.
+ */
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -254,7 +256,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-/// Section header widget
+/**
+ * Section header widget for settings categories.
+ */
 class _SectionHeader extends StatelessWidget {
   final String title;
 

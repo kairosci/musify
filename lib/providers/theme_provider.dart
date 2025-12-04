@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Theme provider for managing app theme (light/dark mode)
+/**
+ * Provider for managing app theme (light/dark mode).
+ * 
+ * Notifies listeners when the theme changes so UI can be updated.
+ */
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.dark;
 

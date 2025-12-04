@@ -4,7 +4,12 @@ import '../providers/player_provider.dart';
 import '../providers/library_provider.dart';
 import '../utils/app_theme.dart';
 
-/// Full-screen player with album art and controls
+/**
+ * Full-screen player with album art and controls.
+ * 
+ * Displays the currently playing song with artwork, progress bar,
+ * playback controls, and additional options.
+ */
 class PlayerScreen extends StatelessWidget {
   const PlayerScreen({super.key});
 
@@ -86,7 +91,9 @@ class PlayerScreen extends StatelessWidget {
   }
 }
 
-/// Player app bar with collapse and menu buttons
+/**
+ * Player app bar with collapse and menu buttons.
+ */
 class _PlayerAppBar extends StatelessWidget {
   final PlayerProvider playerProvider;
 
@@ -202,7 +209,9 @@ class _PlayerAppBar extends StatelessWidget {
   }
 }
 
-/// Album art display
+/**
+ * Album art display widget.
+ */
 class _AlbumArt extends StatelessWidget {
   final String? imageUrl;
 
@@ -252,7 +261,9 @@ class _AlbumArt extends StatelessWidget {
   }
 }
 
-/// Song info with like button
+/**
+ * Song info display with like button.
+ */
 class _SongInfo extends StatelessWidget {
   final dynamic song;
 
@@ -303,7 +314,9 @@ class _SongInfo extends StatelessWidget {
   }
 }
 
-/// Progress bar with timestamps
+/**
+ * Progress bar with timestamps.
+ */
 class _ProgressBar extends StatelessWidget {
   final PlayerProvider playerProvider;
 
@@ -355,7 +368,9 @@ class _ProgressBar extends StatelessWidget {
   }
 }
 
-/// Main player controls
+/**
+ * Main player controls (shuffle, prev, play/pause, next, repeat).
+ */
 class _PlayerControls extends StatelessWidget {
   final PlayerProvider playerProvider;
 
@@ -430,7 +445,9 @@ class _PlayerControls extends StatelessWidget {
   }
 }
 
-/// Extra controls row
+/**
+ * Extra controls row (devices, share, queue).
+ */
 class _ExtraControls extends StatelessWidget {
   final PlayerProvider playerProvider;
 

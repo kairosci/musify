@@ -190,7 +190,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Seek to position by percentage (0.0 to 1.0)
+  /**
+   * Seeks to a position based on percentage (0.0 to 1.0).
+   */
   void seekToPercent(double percent) {
     final newPosition = Duration(
       milliseconds: (_duration.inMilliseconds * percent).round(),
@@ -199,18 +201,23 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Set volume
+  /**
+   * Sets the playback volume (0.0 to 1.0).
+   */
   void setVolume(double volume) {
     _volume = volume.clamp(0.0, 1.0);
     notifyListeners();
   }
 
-  /// Toggle shuffle mode
+  /**
+   * Toggles shuffle mode on/off.
+   * When enabled, shuffles queue while keeping current song first.
+   * When disabled, restores original queue order.
+   */
   void toggleShuffle() {
     _shuffle = !_shuffle;
     
     if (_shuffle) {
-      // Shuffle queue but keep current song
       final currentSong = _currentSong;
       _queue.shuffle();
       if (currentSong != null) {
@@ -219,7 +226,6 @@ class PlayerProvider extends ChangeNotifier {
         _currentIndex = 0;
       }
     } else {
-      // Restore original order
       final currentSong = _currentSong;
       _queue = List.from(_originalQueue);
       if (currentSong != null) {
@@ -231,7 +237,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle repeat mode
+  /**
+   * Cycles through repeat modes: off -> all -> one -> off.
+   */
   void toggleRepeat() {
     switch (_repeatMode) {
       case RepeatMode.off:
@@ -247,21 +255,27 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Add song to queue
+  /**
+   * Adds a song to the end of the queue.
+   */
   void addToQueue(Song song) {
     _queue.add(song);
     _originalQueue.add(song);
     notifyListeners();
   }
 
-  /// Add song to play next
+  /**
+   * Inserts a song to play immediately after the current song.
+   */
   void playNext(Song song) {
     _queue.insert(_currentIndex + 1, song);
     _originalQueue.insert(_currentIndex + 1, song);
     notifyListeners();
   }
 
-  /// Remove song from queue
+  /**
+   * Removes a song from the queue at the specified index.
+   */
   void removeFromQueue(int index) {
     if (index < 0 || index >= _queue.length) return;
     
@@ -274,7 +288,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clear queue
+  /**
+   * Clears the entire queue and stops playback.
+   */
   void clearQueue() {
     _queue.clear();
     _originalQueue.clear();
@@ -286,7 +302,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Play song at specific index in queue
+  /**
+   * Plays the song at a specific index in the queue.
+   */
   void playAtIndex(int index) {
     if (index < 0 || index >= _queue.length) return;
     
@@ -298,19 +316,28 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update position (called by audio service)
+  /**
+   * Updates the current playback position.
+   * Called by the audio service during playback.
+   */
   void updatePosition(Duration position) {
     _position = position;
     notifyListeners();
   }
 
-  /// Update duration (called by audio service)
+  /**
+   * Updates the total duration of the current track.
+   * Called by the audio service when track metadata is loaded.
+   */
   void updateDuration(Duration duration) {
     _duration = duration;
     notifyListeners();
   }
 
-  /// Update playback state
+  /**
+   * Updates the current playback state.
+   * Called by the audio service when playback state changes.
+   */
   void updatePlaybackState(PlaybackState state) {
     _playbackState = state;
     notifyListeners();

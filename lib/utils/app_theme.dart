@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 
-/// App theme configuration with modern dark theme UX and red accent color
+/**
+ * App theme configuration with modern dark theme UX and red accent color.
+ * 
+ * Provides consistent styling throughout the application including
+ * color schemes, typography, and component themes for both light and dark modes.
+ */
 class AppTheme {
-  // Primary Colors - Red accent as requested
   static const Color primaryRed = Color(0xFFE53935);
   static const Color primaryRedLight = Color(0xFFFF6F60);
   static const Color primaryRedDark = Color(0xFFAB000D);
   
-  // Background Colors - Modern dark theme
   static const Color backgroundDark = Color(0xFF121212);
   static const Color backgroundDarkSecondary = Color(0xFF181818);
   static const Color backgroundDarkTertiary = Color(0xFF282828);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   
-  // Light theme colors
   static const Color backgroundLight = Color(0xFFFAFAFA);
   static const Color surfaceLight = Color(0xFFFFFFFF);
   
-  // Text Colors
   static const Color textPrimaryDark = Color(0xFFFFFFFF);
   static const Color textSecondaryDark = Color(0xFFB3B3B3);
   static const Color textTertiaryDark = Color(0xFF727272);
@@ -25,17 +26,17 @@ class AppTheme {
   static const Color textPrimaryLight = Color(0xFF000000);
   static const Color textSecondaryLight = Color(0xFF6A6A6A);
   
-  // Card & Surface colors
   static const Color cardDark = Color(0xFF282828);
   static const Color cardLight = Color(0xFFFFFFFF);
   
-  // Gradient colors for cards
   static const List<Color> redGradient = [
     Color(0xFFE53935),
     Color(0xFFAB000D),
   ];
 
-  /// Dark theme - Primary theme (Modern dark)
+  /**
+   * Returns the dark theme configuration.
+   */
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
@@ -43,7 +44,6 @@ class AppTheme {
       primaryColor: primaryRed,
       scaffoldBackgroundColor: backgroundDark,
       
-      // Color Scheme
       colorScheme: const ColorScheme.dark(
         primary: primaryRed,
         primaryContainer: primaryRedDark,
@@ -221,7 +221,9 @@ class AppTheme {
     );
   }
 
-  /// Light theme
+  /**
+   * Returns the light theme configuration.
+   */
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

@@ -10,7 +10,9 @@ import '../widgets/album_card.dart';
 import '../widgets/section_header.dart';
 import 'album_screen.dart';
 
-/// Artist detail screen
+/**
+ * Artist detail screen showing artist info, top songs, and albums.
+ */
 class ArtistScreen extends StatelessWidget {
   final Artist artist;
 
@@ -172,7 +174,9 @@ class ArtistScreen extends StatelessWidget {
   }
 }
 
-/// Artist header with background image
+/**
+ * Artist header with background image and gradient overlay.
+ */
 class _ArtistHeader extends StatelessWidget {
   final Artist artist;
 
@@ -274,7 +278,9 @@ class _ArtistHeader extends StatelessWidget {
   }
 }
 
-/// Action bar with follow/play buttons
+/**
+ * Action bar with follow/play buttons.
+ */
 class _ActionBar extends StatelessWidget {
   final Artist artist;
   final List songs;

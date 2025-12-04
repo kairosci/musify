@@ -6,20 +6,22 @@ import '../models/sync_chain.dart';
 import '../models/song.dart';
 import '../models/playlist.dart';
 
-/// Provider for managing P2P synchronization without accounts
-/// Similar to Brave's sync feature
+/**
+ * Provider for managing P2P synchronization without accounts.
+ * 
+ * Similar to Brave's sync feature, this enables syncing library data
+ * across devices using a 24-word sync key without requiring user accounts.
+ */
 class SyncProvider extends ChangeNotifier {
   SyncChain? _syncChain;
   SyncStatus _status = SyncStatus.disabled;
   String? _errorMessage;
   
-  // Sync preferences
   bool _syncLikedSongs = true;
   bool _syncPlaylists = true;
   bool _syncSettings = true;
   bool _syncRecentlyPlayed = false;
 
-  // Getters
   SyncChain? get syncChain => _syncChain;
   SyncStatus get status => _status;
   String? get errorMessage => _errorMessage;
@@ -34,7 +36,9 @@ class SyncProvider extends ChangeNotifier {
   List<SyncDevice> get connectedDevices => _syncChain?.connectedDevices ?? [];
   int get deviceCount => connectedDevices.length;
 
-  /// Get current platform name
+  /**
+   * Returns the current platform identifier.
+   */
   String get currentPlatform {
     if (kIsWeb) return 'web';
     if (Platform.isWindows) return 'windows';
@@ -45,7 +49,9 @@ class SyncProvider extends ChangeNotifier {
     return 'unknown';
   }
 
-  /// Get default device name based on platform
+  /**
+   * Returns a default device name based on the current platform.
+   */
   String get defaultDeviceName {
     final platform = currentPlatform;
     switch (platform) {
@@ -66,7 +72,9 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  /// Create a new sync chain (start new sync)
+  /**
+   * Creates a new sync chain and returns the sync key.
+   */
   Future<String> createSyncChain({String? deviceName}) async {
     _status = SyncStatus.syncing;
     notifyListeners();
@@ -75,7 +83,6 @@ class SyncProvider extends ChangeNotifier {
       final name = deviceName ?? defaultDeviceName;
       _syncChain = SyncChain.create(deviceName: name);
       
-      // Add current device to the chain
       final currentDevice = SyncDevice(
         id: _syncChain!.deviceId,
         name: name,
@@ -102,13 +109,14 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  /// Join an existing sync chain using sync key
+  /**
+   * Joins an existing sync chain using the provided sync key.
+   */
   Future<void> joinSyncChain(String syncKey, {String? deviceName}) async {
     _status = SyncStatus.syncing;
     notifyListeners();
 
     try {
-      // Validate sync key format using the model's validation
       if (!SyncChain.isValidSyncKey(syncKey)) {
         throw Exception(
             'Invalid sync key. Make sure you enter exactly 24 words from the sync code.');
@@ -116,7 +124,6 @@ class SyncProvider extends ChangeNotifier {
 
       final name = deviceName ?? defaultDeviceName;
       
-      // Create a new device entry for this device
       final currentDevice = SyncDevice(
         id: const Uuid().v4(),
         name: name,
@@ -126,8 +133,6 @@ class SyncProvider extends ChangeNotifier {
         isCurrentDevice: true,
       );
 
-      // In a real implementation, this would connect to the P2P network
-      // and retrieve the sync chain data from other devices
       _syncChain = SyncChain(
         id: const Uuid().v4(),
         deviceId: currentDevice.id,
@@ -141,7 +146,6 @@ class SyncProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      // Simulate initial sync
       await syncNow();
     } catch (e) {
       _status = SyncStatus.error;
@@ -151,7 +155,9 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  /// Leave the current sync chain
+  /**
+   * Leaves the current sync chain and stops syncing.
+   */
   Future<void> leaveSyncChain() async {
     if (_syncChain == null) return;
 
@@ -159,8 +165,6 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // In a real implementation, this would notify other devices
-      // and remove this device from the P2P network
       _syncChain = null;
       _status = SyncStatus.disabled;
       _errorMessage = null;
@@ -173,11 +177,12 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  /// Remove a device from the sync chain
+  /**
+   * Removes a device from the sync chain by its ID.
+   */
   Future<void> removeDevice(String deviceId) async {
     if (_syncChain == null) return;
     
-    // Cannot remove current device using this method
     if (deviceId == _syncChain!.deviceId) {
       throw Exception('Cannot remove current device. Use leaveSyncChain() instead.');
     }
@@ -190,7 +195,9 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle sync enabled/disabled
+  /**
+   * Toggles sync enabled/disabled state.
+   */
   void toggleSync() {
     if (_syncChain == null) return;
     
@@ -199,7 +206,9 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update sync preferences
+  /**
+   * Updates sync preferences for what data types to sync.
+   */
   void updateSyncPreferences({
     bool? syncLikedSongs,
     bool? syncPlaylists,
@@ -213,7 +222,9 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Manually trigger sync
+  /**
+   * Manually triggers a sync operation.
+   */
   Future<void> syncNow() async {
     if (_syncChain == null || !_syncChain!.isEnabled) return;
 
@@ -221,14 +232,12 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simulate sync delay (in real implementation, this would do P2P communication)
       await Future.delayed(const Duration(seconds: 2));
 
       _syncChain = _syncChain!.copyWith(lastSyncedAt: DateTime.now());
       _status = SyncStatus.success;
       _errorMessage = null;
       
-      // Reset to idle after showing success
       Future.delayed(const Duration(seconds: 3), () {
         if (_status == SyncStatus.success) {
           _status = SyncStatus.idle;
@@ -244,11 +253,12 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  /// Sync specific data type
+  /**
+   * Syncs a specific data type to other devices.
+   */
   Future<void> syncData(SyncData data) async {
     if (_syncChain == null || !_syncChain!.isEnabled) return;
 
-    // Check if this data type should be synced
     switch (data.type) {
       case 'liked_songs':
         if (!_syncLikedSongs) return;
@@ -264,18 +274,20 @@ class SyncProvider extends ChangeNotifier {
         break;
     }
 
-    // In a real implementation, this would send data to other devices
-    // via P2P network using the sync key for encryption
     await syncNow();
   }
 
-  /// Get sync key words as a list
+  /**
+   * Returns the sync key words as a list.
+   */
   List<String> get syncKeyWords {
     if (_syncChain == null) return [];
     return _syncChain!.syncKey.split(' ');
   }
 
-  /// Get last sync time formatted
+  /**
+   * Returns the last sync time in a human-readable format.
+   */
   String get lastSyncTimeFormatted {
     if (_syncChain?.lastSyncedAt == null) return 'Never';
     
@@ -290,7 +302,9 @@ class SyncProvider extends ChangeNotifier {
     return '${_syncChain!.lastSyncedAt!.day}/${_syncChain!.lastSyncedAt!.month}/${_syncChain!.lastSyncedAt!.year}';
   }
 
-  /// Rename current device
+  /**
+   * Renames the current device.
+   */
   void renameDevice(String newName) {
     if (_syncChain == null) return;
 

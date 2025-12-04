@@ -16,7 +16,9 @@ import 'playlist_screen.dart';
 import 'album_screen.dart';
 import 'artist_screen.dart';
 
-/// Home screen with personalized content
+/**
+ * Home screen with personalized content and recommendations.
+ */
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -157,7 +159,9 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Quick access grid showing recent items
+/**
+ * Quick access grid showing recent items.
+ */
 class _QuickAccessGrid extends StatelessWidget {
   final List<Playlist> playlists;
 
@@ -260,7 +264,9 @@ class _QuickAccessItem extends StatelessWidget {
   }
 }
 
-/// Quick picks horizontal list
+/**
+ * Quick picks horizontal list section.
+ */
 class _QuickPicksSection extends StatelessWidget {
   final List<Song> songs;
 
@@ -359,7 +365,9 @@ class _QuickPickCard extends StatelessWidget {
   }
 }
 
-/// Playlists horizontal row
+/**
+ * Playlists horizontal row.
+ */
 class _PlaylistsRow extends StatelessWidget {
   final List<Playlist> playlists;
 
@@ -395,7 +403,9 @@ class _PlaylistsRow extends StatelessWidget {
   }
 }
 
-/// Albums horizontal row
+/**
+ * Albums horizontal row.
+ */
 class _AlbumsRow extends StatelessWidget {
   final List<Album> albums;
 
@@ -431,7 +441,9 @@ class _AlbumsRow extends StatelessWidget {
   }
 }
 
-/// Artists horizontal row
+/**
+ * Artists horizontal row.
+ */
 class _ArtistsRow extends StatelessWidget {
   final List<Artist> artists;
 
