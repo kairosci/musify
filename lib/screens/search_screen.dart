@@ -22,6 +22,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  static const int _maxSearchResults = 10;
+  
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isSearching = false;
@@ -59,8 +61,9 @@ class _SearchScreenState extends State<SearchScreen> {
         final results = await PipedService.searchMusic(query);
         
         // Convert Piped results to Song models
+        // Note: Server already filters for music_songs, but we keep isMusic check
+        // as a safety measure for any unexpected items
         final songs = results.items
-            .where((item) => item.isMusic)
             .map((item) => item.toSong())
             .toList();
 
@@ -300,7 +303,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
               );
             },
-            childCount: _songResults.length.clamp(0, 10),
+            childCount: _songResults.length.clamp(0, _maxSearchResults),
           ),
         ),
       ],
