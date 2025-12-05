@@ -5,7 +5,11 @@ import '../providers/player_provider.dart';
 import '../providers/library_provider.dart';
 import '../utils/app_theme.dart';
 
-/// Song tile widget for lists
+/**
+ * Song tile widget for displaying songs in lists.
+ * 
+ * Shows song info with options menu and handles playback.
+ */
 class SongTile extends StatelessWidget {
   final Song song;
   final int? index;

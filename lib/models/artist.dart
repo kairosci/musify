@@ -1,7 +1,12 @@
 import 'album.dart';
 import 'song.dart';
 
-/// Represents an artist
+/**
+ * Represents a music artist or creator.
+ * 
+ * Contains artist metadata including name, biography, follower count,
+ * top songs, albums, and verification status.
+ */
 class Artist {
   final String id;
   final String name;

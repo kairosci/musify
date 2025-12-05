@@ -1,4 +1,10 @@
-/// Represents a song/track in the application
+/**
+ * Represents a song/track in the application.
+ * 
+ * This is the core data model for music content, containing
+ * all metadata needed for display and playback including title,
+ * artist, album info, artwork URL, and audio stream URL.
+ */
 class Song {
   final String id;
   final String title;
@@ -86,7 +92,9 @@ class Song {
     );
   }
 
-  /// Format duration as mm:ss
+  /**
+   * Formats the duration as a human-readable string (mm:ss).
+   */
   String get formattedDuration {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds % 60;

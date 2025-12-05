@@ -16,10 +16,8 @@ import 'utils/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Hive for local storage
   await Hive.initFlutter();
   
-  // Set system UI overlay style (only on mobile platforms)
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -30,7 +28,6 @@ void main() async {
       ),
     );
     
-    // Set preferred orientations (only on mobile)
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

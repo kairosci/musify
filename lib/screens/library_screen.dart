@@ -13,7 +13,11 @@ import 'album_screen.dart';
 import 'artist_screen.dart';
 import 'sync_screen.dart';
 
-/// Library screen showing user's saved content
+/**
+ * Library screen showing user's saved content.
+ * 
+ * Displays liked songs, playlists, albums, and followed artists.
+ */
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
@@ -298,7 +302,9 @@ class _LibraryScreenState extends State<LibraryScreen>
   }
 }
 
-/// Filter chips for library
+/**
+ * Filter chips for library content filtering.
+ */
 class _FilterChips extends StatelessWidget {
   final String selected;
   final ValueChanged<String> onSelected;
@@ -386,7 +392,9 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-/// Library item model
+/**
+ * Library item model.
+ */
 class _LibraryItem {
   final String type;
   final String title;
@@ -403,7 +411,9 @@ class _LibraryItem {
   });
 }
 
-/// Library list item widget
+/**
+ * Library list item widget.
+ */
 class _LibraryListItem extends StatelessWidget {
   final _LibraryItem item;
   final VoidCallback onTap;

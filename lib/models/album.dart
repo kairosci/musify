@@ -1,6 +1,11 @@
 import 'song.dart';
 
-/// Represents an album
+/**
+ * Represents a music album containing multiple songs.
+ * 
+ * Contains album metadata including title, artist, year,
+ * cover art, and a list of songs belonging to the album.
+ */
 class Album {
   final String id;
   final String title;

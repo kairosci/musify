@@ -5,12 +5,27 @@ import '../models/album.dart';
 import '../models/artist.dart';
 import '../models/playlist.dart';
 
-/// Service for interacting with Piped API (audio-only YouTube alternative)
+/**
+ * Service for interacting with Piped API.
+ * 
+ * Piped is an open-source privacy-focused alternative frontend for YouTube
+ * that provides audio-only streaming capabilities. This service handles all
+ * communication with Piped instances for searching and streaming music.
+ * 
+ * Features:
+ * - Multiple Piped instances with automatic fallback
+ * - Audio-only streaming (no video content)
+ * - Search for songs, artists, albums, and playlists
+ * - Configurable instance selection
+ */
 class PipedService {
-  // Default Piped instance - can be changed by user
   static String _baseUrl = 'https://pipedapi.kavin.rocks';
+  static int _currentInstanceIndex = 0;
   
-  // Available Piped instances for fallback
+  /**
+   * List of available Piped API instances.
+   * Used for fallback when the primary instance is unavailable.
+   */
   static const List<String> availableInstances = [
     'https://pipedapi.kavin.rocks',
     'https://pipedapi.adminforge.de',
@@ -18,17 +33,28 @@ class PipedService {
     'https://api.piped.yt',
   ];
 
-  /// Set the base URL for Piped API
+  /**
+   * Sets the base URL for all Piped API requests.
+   * Call this method to switch to a different Piped instance.
+   */
   static void setInstance(String url) {
     _baseUrl = url;
+    _currentInstanceIndex = availableInstances.indexOf(url);
+    if (_currentInstanceIndex < 0) _currentInstanceIndex = 0;
   }
 
-  /// Get current instance URL
   static String get currentInstance => _baseUrl;
 
-  /// Search for music (audio-only content)
+  /**
+   * Searches for music tracks using the Piped API.
+   * 
+   * The search is filtered to return only music songs (audio content).
+   * Supports pagination through the nextPage parameter.
+   * 
+   * Automatically falls back to alternative instances on failure.
+   */
   static Future<PipedSearchResult> searchMusic(String query, {String? nextPage}) async {
-    try {
+    return _executeWithFallback(() async {
       final Uri uri;
       if (nextPage != null) {
         uri = Uri.parse('$_baseUrl/nextpage/search')
@@ -46,7 +72,7 @@ class PipedService {
       }
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
         onTimeout: () => throw Exception('Request timeout'),
       );
 
@@ -56,14 +82,15 @@ class PipedService {
       } else {
         throw Exception('Failed to search: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Search failed: $e');
-    }
+    });
   }
 
-  /// Search for artists
+  /**
+   * Searches for artists using the Piped API.
+   * Returns channels/artists matching the search query.
+   */
   static Future<PipedSearchResult> searchArtists(String query) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/search')
           .replace(queryParameters: {
             'q': query,
@@ -71,7 +98,7 @@ class PipedService {
           });
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -80,14 +107,15 @@ class PipedService {
       } else {
         throw Exception('Failed to search artists: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Artist search failed: $e');
-    }
+    });
   }
 
-  /// Search for albums
+  /**
+   * Searches for albums using the Piped API.
+   * Returns music albums matching the search query.
+   */
   static Future<PipedSearchResult> searchAlbums(String query) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/search')
           .replace(queryParameters: {
             'q': query,
@@ -95,7 +123,7 @@ class PipedService {
           });
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -104,14 +132,15 @@ class PipedService {
       } else {
         throw Exception('Failed to search albums: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Album search failed: $e');
-    }
+    });
   }
 
-  /// Search for playlists
+  /**
+   * Searches for playlists using the Piped API.
+   * Returns music playlists matching the search query.
+   */
   static Future<PipedSearchResult> searchPlaylists(String query) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/search')
           .replace(queryParameters: {
             'q': query,
@@ -119,7 +148,7 @@ class PipedService {
           });
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -128,18 +157,22 @@ class PipedService {
       } else {
         throw Exception('Failed to search playlists: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Playlist search failed: $e');
-    }
+    });
   }
 
-  /// Get audio stream URL for a video/song ID (audio-only)
+  /**
+   * Retrieves audio stream information for a specific video/song.
+   * 
+   * Returns detailed stream info including multiple audio quality options,
+   * related tracks, and metadata. The response includes URLs for direct
+   * audio streaming without video content.
+   */
   static Future<PipedStreamInfo> getAudioStream(String videoId) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/streams/$videoId');
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -148,18 +181,19 @@ class PipedService {
       } else {
         throw Exception('Failed to get stream: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Stream fetch failed: $e');
-    }
+    });
   }
 
-  /// Get playlist details
+  /**
+   * Retrieves detailed information about a playlist.
+   * Includes playlist metadata and all contained tracks.
+   */
   static Future<PipedPlaylistInfo> getPlaylist(String playlistId) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/playlists/$playlistId');
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -168,18 +202,19 @@ class PipedService {
       } else {
         throw Exception('Failed to get playlist: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Playlist fetch failed: $e');
-    }
+    });
   }
 
-  /// Get artist/channel details
+  /**
+   * Retrieves detailed information about a channel/artist.
+   * Includes channel metadata and recent uploads.
+   */
   static Future<PipedChannelInfo> getChannel(String channelId) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/channel/$channelId');
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -188,24 +223,24 @@ class PipedService {
       } else {
         throw Exception('Failed to get channel: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Channel fetch failed: $e');
-    }
+    });
   }
 
-  /// Get trending music
+  /**
+   * Retrieves trending music content for a specific region.
+   * Filters results to only include music content.
+   */
   static Future<List<PipedVideoItem>> getTrending({String region = 'US'}) async {
-    try {
+    return _executeWithFallback(() async {
       final uri = Uri.parse('$_baseUrl/trending')
           .replace(queryParameters: {'region': region});
 
       final response = await http.get(uri).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        // Filter to only include music content
         return data
             .map((item) => PipedVideoItem.fromJson(item))
             .where((item) => item.isMusic)
@@ -213,12 +248,13 @@ class PipedService {
       } else {
         throw Exception('Failed to get trending: ${response.statusCode}');
       }
-    } catch (e) {
-      throw Exception('Trending fetch failed: $e');
-    }
+    });
   }
 
-  /// Check if instance is available
+  /**
+   * Checks if a Piped instance is available and responding.
+   * Returns true if the instance is healthy, false otherwise.
+   */
   static Future<bool> checkInstance(String url) async {
     try {
       final response = await http.get(Uri.parse(url)).timeout(
@@ -230,7 +266,10 @@ class PipedService {
     }
   }
 
-  /// Find best available instance
+  /**
+   * Finds the first available Piped instance from the list.
+   * Iterates through all instances and returns the first one that responds.
+   */
   static Future<String?> findBestInstance() async {
     for (final instance in availableInstances) {
       if (await checkInstance(instance)) {
@@ -239,9 +278,39 @@ class PipedService {
     }
     return null;
   }
+
+  /**
+   * Executes an API request with automatic fallback to alternative instances.
+   * 
+   * If the current instance fails, it will try each available instance
+   * in order until one succeeds or all have been tried.
+   */
+  static Future<T> _executeWithFallback<T>(Future<T> Function() request) async {
+    Exception? lastException;
+    final startIndex = _currentInstanceIndex;
+    
+    for (int i = 0; i < availableInstances.length; i++) {
+      final index = (startIndex + i) % availableInstances.length;
+      _baseUrl = availableInstances[index];
+      
+      try {
+        final result = await request();
+        _currentInstanceIndex = index;
+        return result;
+      } catch (e) {
+        lastException = e is Exception ? e : Exception('$e');
+        continue;
+      }
+    }
+    
+    throw lastException ?? Exception('All Piped instances failed');
+  }
 }
 
-/// Search result from Piped API
+/**
+ * Represents the result of a search query from Piped API.
+ * Contains a list of matching items and pagination information.
+ */
 class PipedSearchResult {
   final List<PipedVideoItem> items;
   final String? nextPage;
@@ -267,7 +336,11 @@ class PipedSearchResult {
   }
 }
 
-/// Video/Song item from Piped
+/**
+ * Represents a video/song item from Piped search results.
+ * Contains metadata about the media item including title, artist,
+ * duration, and thumbnail information.
+ */
 class PipedVideoItem {
   final String id;
   final String title;
@@ -295,11 +368,9 @@ class PipedVideoItem {
     required this.type,
   });
 
-  /// Check if this is a music item (not a short or regular video)
   bool get isMusic => !isShort && type == 'stream';
 
   factory PipedVideoItem.fromJson(Map<String, dynamic> json) {
-    // Extract video ID from URL
     String id = '';
     final url = json['url'] as String?;
     if (url != null) {
@@ -327,7 +398,6 @@ class PipedVideoItem {
     return url.replaceAll('/channel/', '');
   }
 
-  /// Convert to Song model
   Song toSong() {
     return Song(
       id: id,
@@ -339,7 +409,11 @@ class PipedVideoItem {
   }
 }
 
-/// Stream info from Piped API (audio streams)
+/**
+ * Contains detailed stream information from Piped API.
+ * Includes audio stream URLs at various quality levels,
+ * related content, and metadata about the media.
+ */
 class PipedStreamInfo {
   final String title;
   final String? description;
@@ -377,7 +451,7 @@ class PipedStreamInfo {
 
     final relatedStreams = (json['relatedStreams'] as List<dynamic>?)
             ?.map((s) => PipedRelatedStream.fromJson(s))
-            .where((s) => !s.isShort) // Filter out shorts
+            .where((s) => !s.isShort)
             .toList() ??
         [];
 
@@ -397,23 +471,22 @@ class PipedStreamInfo {
     );
   }
 
-  /// Get the best quality audio stream URL
+  /**
+   * Returns the best quality audio stream URL available.
+   * Prefers opus/webm codec for better quality, falls back to highest bitrate.
+   */
   String? get bestAudioUrl {
     if (audioStreams.isEmpty) return null;
     
-    // Prefer opus/webm for better quality, then m4a/mp4
     final sorted = List<PipedAudioStream>.from(audioStreams);
     sorted.sort((a, b) => b.bitrate.compareTo(a.bitrate));
     
-    // Try to find opus first
     final opus = sorted.where((s) => s.codec.contains('opus')).firstOrNull;
     if (opus != null) return opus.url;
     
-    // Fall back to highest bitrate
     return sorted.first.url;
   }
 
-  /// Convert to Song model
   Song toSong(String videoId) {
     return Song(
       id: videoId,
@@ -426,7 +499,10 @@ class PipedStreamInfo {
   }
 }
 
-/// Audio stream from Piped
+/**
+ * Represents an individual audio stream from Piped.
+ * Contains stream URL and quality information.
+ */
 class PipedAudioStream {
   final String url;
   final String codec;
@@ -453,7 +529,10 @@ class PipedAudioStream {
   }
 }
 
-/// Related stream from Piped
+/**
+ * Represents a related stream/song recommendation from Piped.
+ * Used for building recommendation queues and related content.
+ */
 class PipedRelatedStream {
   final String id;
   final String title;
@@ -488,7 +567,6 @@ class PipedRelatedStream {
     );
   }
 
-  /// Convert to Song model
   Song toSong() {
     return Song(
       id: id,
@@ -500,7 +578,10 @@ class PipedRelatedStream {
   }
 }
 
-/// Playlist info from Piped
+/**
+ * Contains playlist information from Piped API.
+ * Includes playlist metadata and all contained tracks.
+ */
 class PipedPlaylistInfo {
   final String name;
   final String? thumbnailUrl;
@@ -540,7 +621,6 @@ class PipedPlaylistInfo {
     );
   }
 
-  /// Convert to Playlist model
   Playlist toPlaylist(String id) {
     return Playlist(
       id: id,
@@ -554,7 +634,10 @@ class PipedPlaylistInfo {
   }
 }
 
-/// Channel/Artist info from Piped
+/**
+ * Contains channel/artist information from Piped API.
+ * Includes channel metadata, avatar, banner, and recent uploads.
+ */
 class PipedChannelInfo {
   final String id;
   final String name;
@@ -594,7 +677,6 @@ class PipedChannelInfo {
     );
   }
 
-  /// Convert to Artist model
   Artist toArtist() {
     return Artist(
       id: id,

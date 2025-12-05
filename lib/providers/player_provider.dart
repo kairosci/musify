@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import '../models/song.dart';
 
-/// Enum representing the current playback state
+/**
+ * Enum representing the current playback state of the audio player.
+ */
 enum PlaybackState {
   stopped,
   playing,
@@ -9,39 +11,39 @@ enum PlaybackState {
   buffering,
 }
 
-/// Enum representing the repeat mode
+/**
+ * Enum representing the repeat mode setting.
+ */
 enum RepeatMode {
   off,
   all,
   one,
 }
 
-/// Provider for managing audio playback state
+/**
+ * Provider for managing audio playback state.
+ * 
+ * Handles all playback operations including play, pause, skip,
+ * seek, shuffle, repeat, and queue management. Notifies listeners
+ * of any state changes for UI updates.
+ */
 class PlayerProvider extends ChangeNotifier {
-  // Current playback state
   PlaybackState _playbackState = PlaybackState.stopped;
   
-  // Current song being played
   Song? _currentSong;
   
-  // Queue of songs
   List<Song> _queue = [];
   
-  // Current position in queue
   int _currentIndex = 0;
   
-  // Playback position
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   
-  // Volume (0.0 to 1.0)
   double _volume = 1.0;
   
-  // Playback settings
   bool _shuffle = false;
   RepeatMode _repeatMode = RepeatMode.off;
   
-  // Original queue order (for shuffle)
   List<Song> _originalQueue = [];
 
   // Getters
@@ -62,13 +64,17 @@ class PlayerProvider extends ChangeNotifier {
   bool get hasPrevious => _currentIndex > 0;
   bool get hasNext => _currentIndex < _queue.length - 1;
 
-  /// Progress of current playback (0.0 to 1.0)
+  /**
+   * Returns playback progress as a value between 0.0 and 1.0.
+   */
   double get progress {
     if (_duration == Duration.zero) return 0;
     return _position.inMilliseconds / _duration.inMilliseconds;
   }
 
-  /// Play a song
+  /**
+   * Starts playing a song, optionally with a playlist context.
+   */
   void playSong(Song song, {List<Song>? playlist, int startIndex = 0}) {
     if (playlist != null && playlist.isNotEmpty) {
       _queue = List.from(playlist);
@@ -88,7 +94,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle play/pause
+  /**
+   * Toggles between play and pause states.
+   */
   void togglePlayPause() {
     if (_playbackState == PlaybackState.playing) {
       _playbackState = PlaybackState.paused;
@@ -98,7 +106,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Pause playback
+  /**
+   * Pauses playback if currently playing.
+   */
   void pause() {
     if (_playbackState == PlaybackState.playing) {
       _playbackState = PlaybackState.paused;
@@ -106,7 +116,9 @@ class PlayerProvider extends ChangeNotifier {
     }
   }
 
-  /// Resume playback
+  /**
+   * Resumes playback if currently paused.
+   */
   void play() {
     if (_currentSong != null && _playbackState == PlaybackState.paused) {
       _playbackState = PlaybackState.playing;
@@ -114,14 +126,19 @@ class PlayerProvider extends ChangeNotifier {
     }
   }
 
-  /// Stop playback
+  /**
+   * Stops playback and resets position.
+   */
   void stop() {
     _playbackState = PlaybackState.stopped;
     _position = Duration.zero;
     notifyListeners();
   }
 
-  /// Skip to next song
+  /**
+   * Skips to the next song in the queue.
+   * Handles repeat mode to loop back to start if needed.
+   */
   void skipNext() {
     if (_queue.isEmpty) return;
     
@@ -140,11 +157,13 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Skip to previous song
+  /**
+   * Skips to the previous song or restarts current song.
+   * Restarts if more than 3 seconds have played, otherwise goes to previous.
+   */
   void skipPrevious() {
     if (_queue.isEmpty) return;
     
-    // If more than 3 seconds have passed, restart current song
     if (_position.inSeconds > 3) {
       _position = Duration.zero;
     } else if (_currentIndex > 0) {
@@ -163,13 +182,17 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Seek to position
+  /**
+   * Seeks to a specific position in the current track.
+   */
   void seekTo(Duration position) {
     _position = position;
     notifyListeners();
   }
 
-  /// Seek to position by percentage (0.0 to 1.0)
+  /**
+   * Seeks to a position based on percentage (0.0 to 1.0).
+   */
   void seekToPercent(double percent) {
     final newPosition = Duration(
       milliseconds: (_duration.inMilliseconds * percent).round(),
@@ -178,18 +201,23 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Set volume
+  /**
+   * Sets the playback volume (0.0 to 1.0).
+   */
   void setVolume(double volume) {
     _volume = volume.clamp(0.0, 1.0);
     notifyListeners();
   }
 
-  /// Toggle shuffle mode
+  /**
+   * Toggles shuffle mode on/off.
+   * When enabled, shuffles queue while keeping current song first.
+   * When disabled, restores original queue order.
+   */
   void toggleShuffle() {
     _shuffle = !_shuffle;
     
     if (_shuffle) {
-      // Shuffle queue but keep current song
       final currentSong = _currentSong;
       _queue.shuffle();
       if (currentSong != null) {
@@ -198,7 +226,6 @@ class PlayerProvider extends ChangeNotifier {
         _currentIndex = 0;
       }
     } else {
-      // Restore original order
       final currentSong = _currentSong;
       _queue = List.from(_originalQueue);
       if (currentSong != null) {
@@ -210,7 +237,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle repeat mode
+  /**
+   * Cycles through repeat modes: off -> all -> one -> off.
+   */
   void toggleRepeat() {
     switch (_repeatMode) {
       case RepeatMode.off:
@@ -226,21 +255,27 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Add song to queue
+  /**
+   * Adds a song to the end of the queue.
+   */
   void addToQueue(Song song) {
     _queue.add(song);
     _originalQueue.add(song);
     notifyListeners();
   }
 
-  /// Add song to play next
+  /**
+   * Inserts a song to play immediately after the current song.
+   */
   void playNext(Song song) {
     _queue.insert(_currentIndex + 1, song);
     _originalQueue.insert(_currentIndex + 1, song);
     notifyListeners();
   }
 
-  /// Remove song from queue
+  /**
+   * Removes a song from the queue at the specified index.
+   */
   void removeFromQueue(int index) {
     if (index < 0 || index >= _queue.length) return;
     
@@ -253,7 +288,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clear queue
+  /**
+   * Clears the entire queue and stops playback.
+   */
   void clearQueue() {
     _queue.clear();
     _originalQueue.clear();
@@ -265,7 +302,9 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Play song at specific index in queue
+  /**
+   * Plays the song at a specific index in the queue.
+   */
   void playAtIndex(int index) {
     if (index < 0 || index >= _queue.length) return;
     
@@ -277,19 +316,28 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update position (called by audio service)
+  /**
+   * Updates the current playback position.
+   * Called by the audio service during playback.
+   */
   void updatePosition(Duration position) {
     _position = position;
     notifyListeners();
   }
 
-  /// Update duration (called by audio service)
+  /**
+   * Updates the total duration of the current track.
+   * Called by the audio service when track metadata is loaded.
+   */
   void updateDuration(Duration duration) {
     _duration = duration;
     notifyListeners();
   }
 
-  /// Update playback state
+  /**
+   * Updates the current playback state.
+   * Called by the audio service when playback state changes.
+   */
   void updatePlaybackState(PlaybackState state) {
     _playbackState = state;
     notifyListeners();

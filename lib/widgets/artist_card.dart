@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/artist.dart';
 import '../utils/app_theme.dart';
 
-/// Artist card widget for horizontal lists (circular style)
+/**
+ * Artist card widget for horizontal lists with circular style.
+ */
 class ArtistCard extends StatelessWidget {
   final Artist artist;
   final VoidCallback onTap;

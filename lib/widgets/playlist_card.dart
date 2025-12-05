@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/playlist.dart';
 import '../utils/app_theme.dart';
 
-/// Playlist card widget for horizontal lists
+/**
+ * Playlist card widget for horizontal lists.
+ */
 class PlaylistCard extends StatelessWidget {
   final Playlist playlist;
   final VoidCallback onTap;

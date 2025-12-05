@@ -3,11 +3,15 @@ import '../models/album.dart';
 import '../models/playlist.dart';
 import '../models/artist.dart';
 
-/// Sample data for the application
+/**
+ * Provides sample data for the application.
+ * 
+ * Used for demonstration purposes and as fallback data
+ * when network requests fail or during development.
+ */
 class SampleData {
   static const String _baseImageUrl = 'https://picsum.photos/seed';
 
-  /// Sample songs
   static List<Song> get songs => [
         Song(
           id: 's1',
@@ -122,7 +126,6 @@ class SampleData {
         ),
       ];
 
-  /// Sample albums
   static List<Album> get albums => [
         Album(
           id: 'a1',
@@ -182,7 +185,6 @@ class SampleData {
         ),
       ];
 
-  /// Sample artists
   static List<Artist> get artists => [
         Artist(
           id: 'ar1',
@@ -238,7 +240,6 @@ class SampleData {
         ),
       ];
 
-  /// Sample playlists
   static List<Playlist> get playlists => [
         Playlist(
           id: 'p1',
@@ -296,18 +297,13 @@ class SampleData {
         ),
       ];
 
-  /// Get quick picks (personalized recommendations)
   static List<Song> get quickPicks => songs.take(6).toList();
 
-  /// Get recently played
   static List<Song> get recentlyPlayed => songs.reversed.take(6).toList();
 
-  /// Get recommended playlists
   static List<Playlist> get recommendedPlaylists => playlists.take(4).toList();
 
-  /// Get new releases
   static List<Album> get newReleases => albums.take(5).toList();
 
-  /// Get featured artists
   static List<Artist> get featuredArtists => artists.take(5).toList();
 }

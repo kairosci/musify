@@ -1,6 +1,11 @@
 import 'song.dart';
 
-/// Represents a playlist
+/**
+ * Represents a playlist containing a collection of songs.
+ * 
+ * Supports both user-created and system-generated playlists
+ * with options for public/private visibility and collaboration.
+ */
 class Playlist {
   final String id;
   final String title;
@@ -114,7 +119,6 @@ class Playlist {
 
   String? get displayImage {
     if (imageUrl != null) return imageUrl;
-    // Use first song's image if playlist has no image
     if (songs.isNotEmpty && songs.first.imageUrl != null) {
       return songs.first.imageUrl;
     }

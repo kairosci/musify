@@ -4,8 +4,12 @@ import 'package:provider/provider.dart';
 import '../providers/sync_provider.dart';
 import '../models/sync_chain.dart';
 
-/// Screen for managing P2P sync settings
-/// Inspired by Brave's sync feature - no account required
+/**
+ * Screen for managing P2P sync settings.
+ * 
+ * Enables syncing library data across devices using a 24-word sync key
+ * without requiring user accounts, inspired by Brave's sync feature.
+ */
 class SyncScreen extends StatelessWidget {
   const SyncScreen({super.key});
 
@@ -28,7 +32,9 @@ class SyncScreen extends StatelessWidget {
   }
 }
 
-/// View shown when sync is not set up yet
+/**
+ * View shown when sync is not set up yet.
+ */
 class _SetupSyncView extends StatelessWidget {
   const _SetupSyncView();
 
@@ -369,7 +375,9 @@ class _SetupSyncView extends StatelessWidget {
   }
 }
 
-/// View shown when sync is set up
+/**
+ * View shown when sync is set up.
+ */
 class _SyncSettingsView extends StatelessWidget {
   const _SyncSettingsView();
 
@@ -701,7 +709,9 @@ class _SyncSettingsView extends StatelessWidget {
   }
 }
 
-/// Sync status header widget
+/**
+ * Sync status header widget.
+ */
 class _SyncStatusHeader extends StatelessWidget {
   final SyncProvider syncProvider;
 
@@ -779,7 +789,9 @@ class _SyncStatusHeader extends StatelessWidget {
   }
 }
 
-/// Action card for setup view
+/**
+ * Action card for setup view.
+ */
 class _ActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -856,7 +868,9 @@ class _ActionCard extends StatelessWidget {
   }
 }
 
-/// Device tile widget
+/**
+ * Device tile widget.
+ */
 class _DeviceTile extends StatelessWidget {
   final SyncDevice device;
   final VoidCallback? onRemove;
@@ -866,7 +880,9 @@ class _DeviceTile extends StatelessWidget {
     this.onRemove,
   });
 
-  /// Get platform IconData from device's platform string
+  /**
+   * Returns the appropriate icon for the device's platform.
+   */
   IconData _getPlatformIcon() {
     switch (device.platform.toLowerCase()) {
       case 'windows':
