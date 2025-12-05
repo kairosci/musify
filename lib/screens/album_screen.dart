@@ -7,7 +7,9 @@ import '../utils/app_theme.dart';
 import '../widgets/song_tile.dart';
 import 'artist_screen.dart';
 
-/// Album detail screen
+/**
+ * Album detail screen showing album info and track list.
+ */
 class AlbumScreen extends StatelessWidget {
   final Album album;
 
@@ -112,7 +114,9 @@ class AlbumScreen extends StatelessWidget {
   }
 }
 
-/// Album header with image and info
+/**
+ * Album header with image and info.
+ */
 class _AlbumHeader extends StatelessWidget {
   final Album album;
 
@@ -238,7 +242,9 @@ class _AlbumHeader extends StatelessWidget {
   }
 }
 
-/// Action bar with play/shuffle buttons
+/**
+ * Action bar with play/shuffle buttons.
+ */
 class _ActionBar extends StatelessWidget {
   final Album album;
 

@@ -479,7 +479,9 @@ class _ArtistsRow extends StatelessWidget {
   }
 }
 
-/// Recently played section
+/**
+ * Recently played section.
+ */
 class _RecentlyPlayedSection extends StatelessWidget {
   final List<Song> songs;
 

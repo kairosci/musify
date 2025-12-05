@@ -57,7 +57,6 @@ class AppTheme {
         onError: Colors.black,
       ),
       
-      // AppBar Theme
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -72,7 +71,6 @@ class AppTheme {
         ),
       ),
       
-      // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: backgroundDark,
         selectedItemColor: textPrimaryDark,
@@ -89,7 +87,6 @@ class AppTheme {
         ),
       ),
       
-      // Card Theme
       cardTheme: CardTheme(
         color: cardDark,
         elevation: 0,
@@ -98,7 +95,6 @@ class AppTheme {
         ),
       ),
       
-      // Text Theme
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           color: textPrimaryDark,
@@ -167,13 +163,11 @@ class AppTheme {
         ),
       ),
       
-      // Icon Theme
       iconTheme: const IconThemeData(
         color: textPrimaryDark,
         size: 24,
       ),
       
-      // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryRed,
         foregroundColor: Colors.white,
@@ -181,7 +175,6 @@ class AppTheme {
         shape: CircleBorder(),
       ),
       
-      // Slider Theme
       sliderTheme: SliderThemeData(
         activeTrackColor: primaryRed,
         inactiveTrackColor: textTertiaryDark.withOpacity(0.3),
@@ -191,21 +184,18 @@ class AppTheme {
         trackHeight: 4,
       ),
       
-      // List Tile Theme
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: 16),
         iconColor: textPrimaryDark,
         textColor: textPrimaryDark,
       ),
       
-      // Divider Theme
       dividerTheme: DividerThemeData(
         color: textTertiaryDark.withOpacity(0.2),
         thickness: 1,
         space: 1,
       ),
       
-      // Snackbar Theme
       snackBarTheme: SnackBarThemeData(
         backgroundColor: cardDark,
         contentTextStyle: const TextStyle(color: textPrimaryDark),
@@ -213,7 +203,6 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       
-      // Progress Indicator Theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: primaryRed,
         linearTrackColor: textTertiaryDark,

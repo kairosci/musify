@@ -6,7 +6,12 @@ import '../providers/library_provider.dart';
 import '../utils/app_theme.dart';
 import '../screens/player_screen.dart';
 
-/// Mini player widget shown at the bottom of the screen
+/**
+ * Mini player widget shown at the bottom of the screen.
+ * 
+ * Displays the currently playing song with basic controls
+ * and navigates to the full player screen when tapped.
+ */
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({super.key});
 

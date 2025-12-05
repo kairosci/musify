@@ -6,7 +6,9 @@ import '../providers/library_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/song_tile.dart';
 
-/// Playlist detail screen
+/**
+ * Playlist detail screen showing playlist info and tracks.
+ */
 class PlaylistScreen extends StatelessWidget {
   final Playlist playlist;
   final bool isLikedSongs;
@@ -102,7 +104,9 @@ class PlaylistScreen extends StatelessWidget {
   }
 }
 
-/// Playlist header with image and info
+/**
+ * Playlist header with image and info.
+ */
 class _PlaylistHeader extends StatelessWidget {
   final Playlist playlist;
   final bool isLikedSongs;
@@ -223,7 +227,9 @@ class _PlaylistHeader extends StatelessWidget {
   }
 }
 
-/// Action bar with play/shuffle buttons
+/**
+ * Action bar with play/shuffle buttons.
+ */
 class _ActionBar extends StatelessWidget {
   final Playlist playlist;
   final bool isLikedSongs;

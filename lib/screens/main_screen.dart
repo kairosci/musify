@@ -6,7 +6,12 @@ import 'home_screen.dart';
 import 'search_screen.dart';
 import 'library_screen.dart';
 
-/// Main screen with bottom navigation
+/**
+ * Main screen with bottom navigation.
+ * 
+ * Contains the primary navigation structure with Home, Search,
+ * and Library tabs along with the mini player.
+ */
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 

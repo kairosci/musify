@@ -44,10 +44,8 @@ class PlayerScreen extends StatelessWidget {
             child: SafeArea(
               child: Column(
                 children: [
-                  // App bar
                   _PlayerAppBar(playerProvider: playerProvider),
                   
-                  // Album art
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(32),
@@ -55,13 +53,11 @@ class PlayerScreen extends StatelessWidget {
                     ),
                   ),
                   
-                  // Song info
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: _SongInfo(song: song),
                   ),
                   
-                  // Progress bar
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 32,
@@ -70,13 +66,11 @@ class PlayerScreen extends StatelessWidget {
                     child: _ProgressBar(playerProvider: playerProvider),
                   ),
                   
-                  // Controls
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: _PlayerControls(playerProvider: playerProvider),
                   ),
                   
-                  // Extra controls
                   Padding(
                     padding: const EdgeInsets.all(32),
                     child: _ExtraControls(playerProvider: playerProvider),

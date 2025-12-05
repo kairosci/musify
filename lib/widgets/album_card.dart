@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/album.dart';
 import '../utils/app_theme.dart';
 
-/// Album card widget for horizontal lists
+/**
+ * Album card widget for horizontal lists.
+ */
 class AlbumCard extends StatelessWidget {
   final Album album;
   final VoidCallback onTap;

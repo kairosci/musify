@@ -13,7 +13,12 @@ import 'album_screen.dart';
 import 'artist_screen.dart';
 import 'playlist_screen.dart';
 
-/// Search screen for discovering music
+/**
+ * Search screen for discovering music.
+ * 
+ * Provides search functionality using Piped API and displays
+ * browseable categories when no search query is active.
+ */
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -513,7 +518,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-/// Search bar widget
+/**
+ * Search bar widget.
+ */
 class _SearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -573,7 +580,9 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-/// Browse category model
+/**
+ * Browse category model.
+ */
 class _BrowseCategory {
   final String name;
   final Color color;
@@ -582,7 +591,9 @@ class _BrowseCategory {
   _BrowseCategory(this.name, this.color, this.icon);
 }
 
-/// Category card widget
+/**
+ * Category card widget.
+ */
 class _CategoryCard extends StatelessWidget {
   final _BrowseCategory category;
 

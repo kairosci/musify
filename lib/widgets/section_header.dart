@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
 
-/// Section header widget with title and optional "See All" button
+/**
+ * Section header widget with title and optional "See All" button.
+ */
 class SectionHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
