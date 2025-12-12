@@ -51,23 +51,51 @@ void main() async {
   runApp(FlyerApp(audioHandler: audioHandler));
 }
 
-class FlyerApp extends StatelessWidget {
+class FlyerApp extends StatefulWidget {
   final FlyerAudioHandler audioHandler;
   
   const FlyerApp({super.key, required this.audioHandler});
 
   @override
+  State<FlyerApp> createState() => _FlyerAppState();
+}
+
+class _FlyerAppState extends State<FlyerApp> {
+  late PlayerProvider _playerProvider;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
+    _playerProvider = PlayerProvider();
+    await _playerProvider.initialize();
+    if (mounted) {
+      setState(() {
+        _initialized = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_initialized) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(
-          create: (_) {
-            final provider = PlayerProvider();
-            provider.initialize();
-            return provider;
-          },
-        ),
+        ChangeNotifierProvider.value(value: _playerProvider),
         ChangeNotifierProvider(create: (_) => LibraryProvider()),
         ChangeNotifierProvider(create: (_) => SyncProvider()),
       ],

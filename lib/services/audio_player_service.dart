@@ -115,8 +115,6 @@ class AudioPlayerService {
    * Internal method to load and play a specific song.
    */
   Future<void> _loadAndPlaySong(Song song) async {
-    _currentSongController.add(song);
-
     // Fetch audio stream URL from Piped if not already available
     String? audioUrl = song.audioUrl;
     
@@ -130,8 +128,12 @@ class AudioPlayerService {
       
       // Update current song with fetched audio URL
       _currentSong = song.copyWith(audioUrl: audioUrl);
-      _currentSongController.add(_currentSong);
+    } else {
+      _currentSong = song;
     }
+
+    // Update stream once with the final song
+    _currentSongController.add(_currentSong);
 
     // Set audio source and play
     await _player.setUrl(audioUrl);

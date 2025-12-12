@@ -162,6 +162,16 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   /**
+   * Internal helper to play a song at a specific index.
+   */
+  Future<void> _playAtIndexInternal(int index) async {
+    _currentIndex = index;
+    _currentSong = _queue[_currentIndex];
+    await _audioService.playAtIndex(_currentIndex);
+    notifyListeners();
+  }
+
+  /**
    * Skips to the next song in the queue.
    * Handles repeat mode to loop back to start if needed.
    */
@@ -169,16 +179,10 @@ class PlayerProvider extends ChangeNotifier {
     if (_queue.isEmpty) return;
     
     if (_currentIndex < _queue.length - 1) {
-      _currentIndex++;
-      _currentSong = _queue[_currentIndex];
-      await _audioService.playAtIndex(_currentIndex);
+      await _playAtIndexInternal(_currentIndex + 1);
     } else if (_repeatMode == RepeatMode.all) {
-      _currentIndex = 0;
-      _currentSong = _queue[_currentIndex];
-      await _audioService.playAtIndex(_currentIndex);
+      await _playAtIndexInternal(0);
     }
-    
-    notifyListeners();
   }
 
   /**
@@ -191,16 +195,10 @@ class PlayerProvider extends ChangeNotifier {
     if (_position.inSeconds > 3) {
       await _audioService.seekTo(Duration.zero);
     } else if (_currentIndex > 0) {
-      _currentIndex--;
-      _currentSong = _queue[_currentIndex];
-      await _audioService.playAtIndex(_currentIndex);
+      await _playAtIndexInternal(_currentIndex - 1);
     } else if (_repeatMode == RepeatMode.all) {
-      _currentIndex = _queue.length - 1;
-      _currentSong = _queue[_currentIndex];
-      await _audioService.playAtIndex(_currentIndex);
+      await _playAtIndexInternal(_queue.length - 1);
     }
-    
-    notifyListeners();
   }
 
   /**

@@ -216,7 +216,11 @@ class FlyerAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
    * Inserts a song to play next.
    */
   Future<void> playNext(Song song) async {
-    _queue.insert(_currentIndex + 1, _songToMediaItem(song));
+    if (_currentIndex < _queue.length - 1) {
+      _queue.insert(_currentIndex + 1, _songToMediaItem(song));
+    } else {
+      _queue.add(_songToMediaItem(song));
+    }
     queue.add(_queue);
   }
 
