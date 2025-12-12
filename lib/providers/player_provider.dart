@@ -171,11 +171,11 @@ class PlayerProvider extends ChangeNotifier {
     if (_currentIndex < _queue.length - 1) {
       _currentIndex++;
       _currentSong = _queue[_currentIndex];
-      await _audioService.playSong(_currentSong!);
+      await _audioService.playAtIndex(_currentIndex);
     } else if (_repeatMode == RepeatMode.all) {
       _currentIndex = 0;
       _currentSong = _queue[_currentIndex];
-      await _audioService.playSong(_currentSong!);
+      await _audioService.playAtIndex(_currentIndex);
     }
     
     notifyListeners();
@@ -193,11 +193,11 @@ class PlayerProvider extends ChangeNotifier {
     } else if (_currentIndex > 0) {
       _currentIndex--;
       _currentSong = _queue[_currentIndex];
-      await _audioService.playSong(_currentSong!);
+      await _audioService.playAtIndex(_currentIndex);
     } else if (_repeatMode == RepeatMode.all) {
       _currentIndex = _queue.length - 1;
       _currentSong = _queue[_currentIndex];
-      await _audioService.playSong(_currentSong!);
+      await _audioService.playAtIndex(_currentIndex);
     }
     
     notifyListeners();

@@ -276,9 +276,9 @@ class _ActionBar extends StatelessWidget {
                 ),
                 onPressed: playlist.songs.isEmpty
                     ? null
-                    : () {
+                    : () async {
                         if (!playerProvider.shuffle) {
-                          playerProvider.toggleShuffle();
+                          await playerProvider.toggleShuffle();
                         }
                         await playerProvider.playSong(
                           playlist.songs.first,
@@ -293,7 +293,7 @@ class _ActionBar extends StatelessWidget {
           FloatingActionButton(
             onPressed: playlist.songs.isEmpty
                 ? null
-                : () {
+                : () async {
                     await context.read<PlayerProvider>().playSong(
                           playlist.songs.first,
                           playlist: playlist.songs,

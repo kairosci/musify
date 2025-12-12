@@ -7,10 +7,10 @@ import 'piped_service.dart';
 /**
  * Service for managing audio playback using just_audio.
  * 
- * This service handles the actual audio playback, integrating with
- * the Piped API to fetch audio stream URLs and play them using just_audio.
- * Supports background playback, audio session management, and system
- * media controls.
+ * This service handles the core audio playback functionality,
+ * integrating with the Piped API to fetch audio stream URLs.
+ * Provides streams for state updates (playback state, position,
+ * duration, current song) and manages the playback queue.
  */
 class AudioPlayerService {
   static final AudioPlayerService _instance = AudioPlayerService._internal();
@@ -102,33 +102,40 @@ class AudioPlayerService {
         _currentSong = song;
       }
 
-      _currentSongController.add(_currentSong);
-
-      // Fetch audio stream URL from Piped if not already available
-      String? audioUrl = _currentSong?.audioUrl;
-      
-      if (audioUrl == null || audioUrl.isEmpty) {
-        final streamInfo = await PipedService.getAudioStream(_currentSong!.id);
-        audioUrl = streamInfo.bestAudioUrl;
-        
-        if (audioUrl == null) {
-          throw Exception('No audio stream available for this song');
-        }
-        
-        // Update current song with fetched audio URL
-        _currentSong = _currentSong!.copyWith(audioUrl: audioUrl);
-        _currentSongController.add(_currentSong);
-      }
-
-      // Set audio source and play
-      await _player.setUrl(audioUrl);
-      await _player.play();
+      await _loadAndPlaySong(_currentSong!);
       
     } catch (e) {
       // Error handling - state updated to stopped
       _playbackStateController.add(PlaybackState.stopped);
       rethrow;
     }
+  }
+
+  /**
+   * Internal method to load and play a specific song.
+   */
+  Future<void> _loadAndPlaySong(Song song) async {
+    _currentSongController.add(song);
+
+    // Fetch audio stream URL from Piped if not already available
+    String? audioUrl = song.audioUrl;
+    
+    if (audioUrl == null || audioUrl.isEmpty) {
+      final streamInfo = await PipedService.getAudioStream(song.id);
+      audioUrl = streamInfo.bestAudioUrl;
+      
+      if (audioUrl == null) {
+        throw Exception('No audio stream available for this song');
+      }
+      
+      // Update current song with fetched audio URL
+      _currentSong = song.copyWith(audioUrl: audioUrl);
+      _currentSongController.add(_currentSong);
+    }
+
+    // Set audio source and play
+    await _player.setUrl(audioUrl);
+    await _player.play();
   }
 
   /**
@@ -172,8 +179,8 @@ class AudioPlayerService {
     
     if (_currentIndex < _queue.length - 1) {
       _currentIndex++;
-      final nextSong = _queue[_currentIndex];
-      await playSong(nextSong);
+      _currentSong = _queue[_currentIndex];
+      await _loadAndPlaySong(_currentSong!);
     }
   }
 
@@ -189,8 +196,8 @@ class AudioPlayerService {
     } else if (_currentIndex > 0) {
       // Go to previous song
       _currentIndex--;
-      final previousSong = _queue[_currentIndex];
-      await playSong(previousSong);
+      _currentSong = _queue[_currentIndex];
+      await _loadAndPlaySong(_currentSong!);
     }
   }
 
@@ -275,7 +282,8 @@ class AudioPlayerService {
   Future<void> playAtIndex(int index) async {
     if (index >= 0 && index < _queue.length) {
       _currentIndex = index;
-      await playSong(_queue[index]);
+      _currentSong = _queue[index];
+      await _loadAndPlaySong(_currentSong!);
     }
   }
 
