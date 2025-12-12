@@ -299,8 +299,8 @@ class _SearchScreenState extends State<SearchScreen> {
               final song = _songResults[index];
               return SongTile(
                 song: song,
-                onTap: () {
-                  context.read<PlayerProvider>().playSong(
+                onTap: () async {
+                  await context.read<PlayerProvider>().playSong(
                         song,
                         playlist: _songResults,
                         startIndex: index,

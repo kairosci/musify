@@ -1,15 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:just_audio/just_audio.dart';
 import '../models/song.dart';
-
-/**
- * Enum representing the current playback state of the audio player.
- */
-enum PlaybackState {
-  stopped,
-  playing,
-  paused,
-  buffering,
-}
+import '../services/audio_player_service.dart';
 
 /**
  * Enum representing the repeat mode setting.
@@ -26,8 +18,13 @@ enum RepeatMode {
  * Handles all playback operations including play, pause, skip,
  * seek, shuffle, repeat, and queue management. Notifies listeners
  * of any state changes for UI updates.
+ * 
+ * This provider acts as a bridge between the UI and the AudioPlayerService,
+ * managing state and exposing playback controls to the UI.
  */
 class PlayerProvider extends ChangeNotifier {
+  final AudioPlayerService _audioService = AudioPlayerService();
+  
   PlaybackState _playbackState = PlaybackState.stopped;
   
   Song? _currentSong;
@@ -45,6 +42,8 @@ class PlayerProvider extends ChangeNotifier {
   RepeatMode _repeatMode = RepeatMode.off;
   
   List<Song> _originalQueue = [];
+  
+  bool _initialized = false;
 
   // Getters
   PlaybackState get playbackState => _playbackState;
@@ -65,6 +64,41 @@ class PlayerProvider extends ChangeNotifier {
   bool get hasNext => _currentIndex < _queue.length - 1;
 
   /**
+   * Initializes the audio player service and sets up listeners.
+   */
+  Future<void> initialize() async {
+    if (_initialized) return;
+    
+    await _audioService.initialize();
+    
+    // Listen to playback state changes
+    _audioService.playbackStateStream.listen((state) {
+      _playbackState = state;
+      notifyListeners();
+    });
+    
+    // Listen to position changes
+    _audioService.positionStream.listen((position) {
+      _position = position;
+      notifyListeners();
+    });
+    
+    // Listen to duration changes
+    _audioService.durationStream.listen((duration) {
+      _duration = duration;
+      notifyListeners();
+    });
+    
+    // Listen to current song changes
+    _audioService.currentSongStream.listen((song) {
+      _currentSong = song;
+      notifyListeners();
+    });
+    
+    _initialized = true;
+  }
+
+  /**
    * Returns playback progress as a value between 0.0 and 1.0.
    */
   double get progress {
@@ -75,63 +109,65 @@ class PlayerProvider extends ChangeNotifier {
   /**
    * Starts playing a song, optionally with a playlist context.
    */
-  void playSong(Song song, {List<Song>? playlist, int startIndex = 0}) {
+  Future<void> playSong(Song song, {List<Song>? playlist, int startIndex = 0}) async {
     if (playlist != null && playlist.isNotEmpty) {
       _queue = List.from(playlist);
       _originalQueue = List.from(playlist);
       _currentIndex = startIndex;
-      _currentSong = _queue[_currentIndex];
     } else {
       _queue = [song];
       _originalQueue = [song];
       _currentIndex = 0;
-      _currentSong = song;
     }
     
-    _playbackState = PlaybackState.playing;
-    _position = Duration.zero;
-    _duration = song.duration;
+    _currentSong = song;
     notifyListeners();
+    
+    // Use audio service to actually play the song
+    await _audioService.playSong(song, playlist: _queue, startIndex: _currentIndex);
+    
+    // Apply current repeat mode
+    await _applyRepeatMode();
   }
 
   /**
    * Toggles between play and pause states.
    */
-  void togglePlayPause() {
-    if (_playbackState == PlaybackState.playing) {
-      _playbackState = PlaybackState.paused;
-    } else if (_playbackState == PlaybackState.paused) {
-      _playbackState = PlaybackState.playing;
-    }
-    notifyListeners();
+  Future<void> togglePlayPause() async {
+    await _audioService.togglePlayPause();
   }
 
   /**
    * Pauses playback if currently playing.
    */
-  void pause() {
-    if (_playbackState == PlaybackState.playing) {
-      _playbackState = PlaybackState.paused;
-      notifyListeners();
-    }
+  Future<void> pause() async {
+    await _audioService.pause();
   }
 
   /**
    * Resumes playback if currently paused.
    */
-  void play() {
-    if (_currentSong != null && _playbackState == PlaybackState.paused) {
-      _playbackState = PlaybackState.playing;
-      notifyListeners();
-    }
+  Future<void> play() async {
+    await _audioService.play();
   }
 
   /**
    * Stops playback and resets position.
    */
-  void stop() {
+  Future<void> stop() async {
+    await _audioService.stop();
     _playbackState = PlaybackState.stopped;
     _position = Duration.zero;
+    notifyListeners();
+  }
+
+  /**
+   * Internal helper to play a song at a specific index.
+   */
+  Future<void> _playAtIndexInternal(int index) async {
+    _currentIndex = index;
+    _currentSong = _queue[_currentIndex];
+    await _audioService.playAtIndex(_currentIndex);
     notifyListeners();
   }
 
@@ -139,73 +175,55 @@ class PlayerProvider extends ChangeNotifier {
    * Skips to the next song in the queue.
    * Handles repeat mode to loop back to start if needed.
    */
-  void skipNext() {
+  Future<void> skipNext() async {
     if (_queue.isEmpty) return;
     
     if (_currentIndex < _queue.length - 1) {
-      _currentIndex++;
+      await _playAtIndexInternal(_currentIndex + 1);
     } else if (_repeatMode == RepeatMode.all) {
-      _currentIndex = 0;
-    } else {
-      return;
+      await _playAtIndexInternal(0);
     }
-    
-    _currentSong = _queue[_currentIndex];
-    _position = Duration.zero;
-    _duration = _currentSong?.duration ?? Duration.zero;
-    _playbackState = PlaybackState.playing;
-    notifyListeners();
   }
 
   /**
    * Skips to the previous song or restarts current song.
    * Restarts if more than 3 seconds have played, otherwise goes to previous.
    */
-  void skipPrevious() {
+  Future<void> skipPrevious() async {
     if (_queue.isEmpty) return;
     
     if (_position.inSeconds > 3) {
-      _position = Duration.zero;
+      await _audioService.seekTo(Duration.zero);
     } else if (_currentIndex > 0) {
-      _currentIndex--;
-      _currentSong = _queue[_currentIndex];
-      _position = Duration.zero;
-      _duration = _currentSong?.duration ?? Duration.zero;
+      await _playAtIndexInternal(_currentIndex - 1);
     } else if (_repeatMode == RepeatMode.all) {
-      _currentIndex = _queue.length - 1;
-      _currentSong = _queue[_currentIndex];
-      _position = Duration.zero;
-      _duration = _currentSong?.duration ?? Duration.zero;
+      await _playAtIndexInternal(_queue.length - 1);
     }
-    
-    _playbackState = PlaybackState.playing;
-    notifyListeners();
   }
 
   /**
    * Seeks to a specific position in the current track.
    */
-  void seekTo(Duration position) {
-    _position = position;
-    notifyListeners();
+  Future<void> seekTo(Duration position) async {
+    await _audioService.seekTo(position);
   }
 
   /**
    * Seeks to a position based on percentage (0.0 to 1.0).
    */
-  void seekToPercent(double percent) {
+  Future<void> seekToPercent(double percent) async {
     final newPosition = Duration(
       milliseconds: (_duration.inMilliseconds * percent).round(),
     );
-    _position = newPosition;
-    notifyListeners();
+    await _audioService.seekTo(newPosition);
   }
 
   /**
    * Sets the playback volume (0.0 to 1.0).
    */
-  void setVolume(double volume) {
+  Future<void> setVolume(double volume) async {
     _volume = volume.clamp(0.0, 1.0);
+    await _audioService.setVolume(_volume);
     notifyListeners();
   }
 
@@ -214,7 +232,7 @@ class PlayerProvider extends ChangeNotifier {
    * When enabled, shuffles queue while keeping current song first.
    * When disabled, restores original queue order.
    */
-  void toggleShuffle() {
+  Future<void> toggleShuffle() async {
     _shuffle = !_shuffle;
     
     if (_shuffle) {
@@ -234,13 +252,14 @@ class PlayerProvider extends ChangeNotifier {
       }
     }
     
+    await _audioService.setShuffleMode(_shuffle);
     notifyListeners();
   }
 
   /**
    * Cycles through repeat modes: off -> all -> one -> off.
    */
-  void toggleRepeat() {
+  Future<void> toggleRepeat() async {
     switch (_repeatMode) {
       case RepeatMode.off:
         _repeatMode = RepeatMode.all;
@@ -252,7 +271,25 @@ class PlayerProvider extends ChangeNotifier {
         _repeatMode = RepeatMode.off;
         break;
     }
+    await _applyRepeatMode();
     notifyListeners();
+  }
+
+  /**
+   * Applies the current repeat mode to the audio player.
+   */
+  Future<void> _applyRepeatMode() async {
+    switch (_repeatMode) {
+      case RepeatMode.off:
+        await _audioService.setLoopMode(LoopMode.off);
+        break;
+      case RepeatMode.all:
+        await _audioService.setLoopMode(LoopMode.all);
+        break;
+      case RepeatMode.one:
+        await _audioService.setLoopMode(LoopMode.one);
+        break;
+    }
   }
 
   /**
@@ -261,6 +298,7 @@ class PlayerProvider extends ChangeNotifier {
   void addToQueue(Song song) {
     _queue.add(song);
     _originalQueue.add(song);
+    _audioService.addToQueue(song);
     notifyListeners();
   }
 
@@ -270,6 +308,7 @@ class PlayerProvider extends ChangeNotifier {
   void playNext(Song song) {
     _queue.insert(_currentIndex + 1, song);
     _originalQueue.insert(_currentIndex + 1, song);
+    _audioService.playNext(song);
     notifyListeners();
   }
 
@@ -280,6 +319,8 @@ class PlayerProvider extends ChangeNotifier {
     if (index < 0 || index >= _queue.length) return;
     
     _queue.removeAt(index);
+    _audioService.removeFromQueue(index);
+    
     if (index < _currentIndex) {
       _currentIndex--;
     } else if (index == _currentIndex && _queue.isNotEmpty) {
@@ -291,28 +332,30 @@ class PlayerProvider extends ChangeNotifier {
   /**
    * Clears the entire queue and stops playback.
    */
-  void clearQueue() {
+  Future<void> clearQueue() async {
     _queue.clear();
     _originalQueue.clear();
     _currentIndex = 0;
     _currentSong = null;
-    _playbackState = PlaybackState.stopped;
     _position = Duration.zero;
     _duration = Duration.zero;
+    
+    await _audioService.stop();
+    _audioService.clearQueue();
+    
+    _playbackState = PlaybackState.stopped;
     notifyListeners();
   }
 
   /**
    * Plays the song at a specific index in the queue.
    */
-  void playAtIndex(int index) {
+  Future<void> playAtIndex(int index) async {
     if (index < 0 || index >= _queue.length) return;
     
     _currentIndex = index;
     _currentSong = _queue[index];
-    _position = Duration.zero;
-    _duration = _currentSong?.duration ?? Duration.zero;
-    _playbackState = PlaybackState.playing;
+    await _audioService.playAtIndex(index);
     notifyListeners();
   }
 
@@ -341,5 +384,11 @@ class PlayerProvider extends ChangeNotifier {
   void updatePlaybackState(PlaybackState state) {
     _playbackState = state;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _audioService.dispose();
+    super.dispose();
   }
 }

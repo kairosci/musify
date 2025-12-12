@@ -81,8 +81,8 @@ class PlaylistScreen extends StatelessWidget {
                     song: song,
                     index: index + 1,
                     showAlbum: true,
-                    onTap: () {
-                      context.read<PlayerProvider>().playSong(
+                    onTap: () async {
+                      await context.read<PlayerProvider>().playSong(
                             song,
                             playlist: playlist.songs,
                             startIndex: index,
@@ -276,11 +276,11 @@ class _ActionBar extends StatelessWidget {
                 ),
                 onPressed: playlist.songs.isEmpty
                     ? null
-                    : () {
+                    : () async {
                         if (!playerProvider.shuffle) {
-                          playerProvider.toggleShuffle();
+                          await playerProvider.toggleShuffle();
                         }
-                        playerProvider.playSong(
+                        await playerProvider.playSong(
                           playlist.songs.first,
                           playlist: playlist.songs,
                         );
@@ -293,8 +293,8 @@ class _ActionBar extends StatelessWidget {
           FloatingActionButton(
             onPressed: playlist.songs.isEmpty
                 ? null
-                : () {
-                    context.read<PlayerProvider>().playSong(
+                : () async {
+                    await context.read<PlayerProvider>().playSong(
                           playlist.songs.first,
                           playlist: playlist.songs,
                         );
@@ -334,7 +334,7 @@ class _ActionBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.add_to_queue),
             title: const Text('Add to queue'),
-            onTap: () {
+            onTap: () async {
               for (final song in playlist.songs) {
                 context.read<PlayerProvider>().addToQueue(song);
               }
@@ -355,7 +355,7 @@ class _ActionBar extends StatelessWidget {
               leading: Icon(Icons.delete_outline, color: Colors.red[400]),
               title: Text('Delete playlist',
                   style: TextStyle(color: Colors.red[400])),
-              onTap: () {
+              onTap: () async {
                 context.read<LibraryProvider>().deletePlaylist(playlist.id);
                 Navigator.pop(context);
                 Navigator.pop(context);

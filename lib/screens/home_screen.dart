@@ -286,8 +286,8 @@ class _QuickPicksSection extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12),
             child: _QuickPickCard(
               song: song,
-              onTap: () {
-                context.read<PlayerProvider>().playSong(
+              onTap: () async {
+                await context.read<PlayerProvider>().playSong(
                       song,
                       playlist: songs,
                       startIndex: index,
@@ -501,8 +501,8 @@ class _RecentlyPlayedSection extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12),
             child: _QuickPickCard(
               song: song,
-              onTap: () {
-                context.read<PlayerProvider>().playSong(
+              onTap: () async {
+                await context.read<PlayerProvider>().playSong(
                       song,
                       playlist: songs,
                       startIndex: index,
