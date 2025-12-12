@@ -88,7 +88,7 @@ class ArtistScreen extends StatelessWidget {
                     index: index + 1,
                     showAlbum: true,
                     onTap: () {
-                      context.read<PlayerProvider>().playSong(
+                      await context.read<PlayerProvider>().playSong(
                             song,
                             playlist: artistSongs,
                             startIndex: index,
@@ -343,9 +343,9 @@ class _ActionBar extends StatelessWidget {
                     ? null
                     : () {
                         if (!playerProvider.shuffle) {
-                          playerProvider.toggleShuffle();
+                          await playerProvider.toggleShuffle();
                         }
-                        playerProvider.playSong(
+                        await playerProvider.playSong(
                           songs.first,
                           playlist: songs.cast(),
                         );
@@ -359,7 +359,7 @@ class _ActionBar extends StatelessWidget {
             onPressed: songs.isEmpty
                 ? null
                 : () {
-                    context.read<PlayerProvider>().playSong(
+                    await context.read<PlayerProvider>().playSong(
                           songs.first,
                           playlist: songs.cast(),
                         );

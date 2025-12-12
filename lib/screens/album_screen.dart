@@ -69,8 +69,8 @@ class AlbumScreen extends StatelessWidget {
                     song: song,
                     index: index + 1,
                     showAlbum: false,
-                    onTap: () {
-                      context.read<PlayerProvider>().playSong(
+                    onTap: () async {
+                      await context.read<PlayerProvider>().playSong(
                             song,
                             playlist: album.songs,
                             startIndex: index,
@@ -296,11 +296,11 @@ class _ActionBar extends StatelessWidget {
                 ),
                 onPressed: album.songs.isEmpty
                     ? null
-                    : () {
+                    : () async {
                         if (!playerProvider.shuffle) {
-                          playerProvider.toggleShuffle();
+                          await playerProvider.toggleShuffle();
                         }
-                        playerProvider.playSong(
+                        await playerProvider.playSong(
                           album.songs.first,
                           playlist: album.songs,
                         );
@@ -313,8 +313,8 @@ class _ActionBar extends StatelessWidget {
           FloatingActionButton(
             onPressed: album.songs.isEmpty
                 ? null
-                : () {
-                    context.read<PlayerProvider>().playSong(
+                : () async {
+                    await context.read<PlayerProvider>().playSong(
                           album.songs.first,
                           playlist: album.songs,
                         );
